@@ -103,6 +103,45 @@
   grid-column: 1 / -1;
 }
 
+/* UserListPage.css */
+/* (var olan tüm CSS'n burada olacak) */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+  gap: 8px;
+}
+
+.pagination button {
+  border: 1px solid #4a76a8;
+  background: white;
+  color: #4a76a8;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #4a76a8;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pagination .active-page {
+  background-color: #4a76a8;
+  color: white;
+  cursor: default;
+  pointer-events: none;
+}
+
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .user-cards {

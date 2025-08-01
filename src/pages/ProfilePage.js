@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProfileField from '../components/ProfileField';
-import Feed from '../components/Feed'; // Feed bileşeni
+import Feed from '../components/Feed';
 import { getStudentProfileByUsername, editProfile } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
 import '../styles/ProfilePage.css';
@@ -10,7 +10,7 @@ function ProfilePage() {
   const username = localStorage.getItem('username');
   const userId = localStorage.getItem('userId') || null;
 
-  const currentUser = userId ? { studentId: userId } : null; 
+  const currentUser = userId ? { studentId: userId } : null;
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -37,6 +37,7 @@ function ProfilePage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
+  // Profil bilgilerini getir
   useEffect(() => {
     if (!username) return;
 
@@ -80,6 +81,34 @@ function ProfilePage() {
 
     fetchPosts();
   }, [userId, page]);
+
+  // Meslekleri yükle
+  useEffect(() => {
+    fetch('/data/meslekler.json')
+      .then(res => res.json())
+      .then(data => setProfessions(data))
+      .catch(err => console.error('Meslekler yüklenemedi:', err));
+  }, []);
+
+  // Üniversiteleri yükle
+  useEffect(() => {
+    fetch('/data/uni.json')
+      .then(res => res.json())
+      .then(data => setUniversities(data))
+      .catch(err => console.error('Üniversiteler yüklenemedi:', err));
+  }, []);
+
+  // Şehirleri yükle
+  useEffect(() => {
+    fetch('https://turkiyeapi.dev/api/v1/provinces')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'OK') {
+          setCities(data.data.map(city => city.name));
+        }
+      })
+      .catch(err => console.error('İl API hatası:', err));
+  }, []);
 
   const onFieldChange = (field, value) => {
     setFormData(prev => {
@@ -187,7 +216,7 @@ function ProfilePage() {
           {loadingPosts ? (
             <p>Gönderiler yükleniyor...</p>
           ) : (
-           <Feed
+            <Feed
               posts={posts}
               currentUser={currentUser}
               page={page}

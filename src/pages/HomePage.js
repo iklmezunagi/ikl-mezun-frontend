@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
+import CreatePostModal from '../components/CreatePostModal';
 import { getStudentProfileByUsername } from '../services/StudentService';
-import { getAllPostsPaged } from '../services/PostService';
+import { getAllPostsPaged, createPost } from '../services/PostService';
 import { useNavigate } from 'react-router-dom';
+
 import '../styles/Homepage.css';
+import defaultProfile from '../assets/default-profile.png';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -16,6 +19,9 @@ function HomePage() {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loadingPosts, setLoadingPosts] = useState(true);
+
+  // Modal açık-kapalı durumu
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Arama ve filtreler
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +60,7 @@ function HomePage() {
       setLoadingPosts(true);
       try {
         const data = await getAllPostsPaged(page);
-        setPosts(data);
+        setPosts(data.data || data); // backend dönüşüne göre uyarlayın
       } catch (err) {
         console.error('Gönderiler alınamadı:', err);
       } finally {
@@ -81,31 +87,44 @@ function HomePage() {
       .catch(err => console.error('Üniversiteler yüklenemedi:', err));
   }, []);
 
-  // Arama butonuna basınca
+  // Arama butonuna basınca sayfa 1 ile arama yapacak:
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/userList?search=${encodeURIComponent(searchTerm)}`);
+      navigate(`/userList?search=${encodeURIComponent(searchTerm)}&page=1`);
     }
   };
 
-  // Üniversite filtresi değişince
+  // Üniversite filtresi değişince sayfa 1 ile
   const handleUniversityFilter = (uni) => {
     setFilterOptions(prev => ({ ...prev, university: uni }));
     if (uni) {
-      navigate(`/userList?university=${encodeURIComponent(uni)}`);
+      navigate(`/userList?university=${encodeURIComponent(uni)}&page=1`);
     } else {
       navigate('/userList');
     }
   };
 
-  // Meslek filtresi değişince
+  // Meslek filtresi değişince sayfa 1 ile
   const handleProfessionFilter = (prof) => {
     setFilterOptions(prev => ({ ...prev, profession: prof }));
     if (prof) {
-      navigate(`/userList?profession=${encodeURIComponent(prof)}`);
+      navigate(`/userList?profession=${encodeURIComponent(prof)}&page=1`);
     } else {
       navigate('/userList');
+    }
+  };
+
+  // Yeni gönderi oluşturulunca çağrılır (modal'dan)
+  const handlePostCreated = async (content) => {
+    try {
+      await createPost(content);
+      setPage(1); // Yeni gönderi eklenince anasayfayı 1. sayfaya getir
+      // Gönderileri tekrar yükle:
+      const data = await getAllPostsPaged(1);
+      setPosts(data.data || data);
+    } catch (err) {
+      alert('Gönderi oluşturulamadı: ' + err.message);
     }
   };
 
@@ -114,23 +133,32 @@ function HomePage() {
       <Navbar currentUser={currentUser} />
 
       <div className="home-container">
-        {/* Sol Sidebar - Kullanıcı Kartı */}
+        {/* Sol Sidebar - Kullanıcı Kartı ve Create Post Butonu */}
         <div className="left-sidebar">
           {currentUser ? (
-            <div className="user-card">
-              <div className="user-avatar">
-                <img
-                  src={currentUser.profileImage || '/default-profile.png'}
-                  alt={`${currentUser.firstName} ${currentUser.lastName}`}
-                />
+            <>
+              <div className="user-card">
+                <div className="user-avatar">
+                  <img
+                    src={currentUser.profileImage || defaultProfile}
+                    alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                  />
+                </div>
+                <div className="user-info">
+                  <h3>{currentUser.firstName} {currentUser.lastName}</h3>
+                  <p>{currentUser.profession}</p>
+                  <p>{currentUser.universityName || currentUser.university}</p>
+                  <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
+                </div>
               </div>
-              <div className="user-info">
-                <h3>{currentUser.firstName} {currentUser.lastName}</h3>
-                <p>{currentUser.profession}</p>
-                <p>{currentUser.universityName || currentUser.university}</p>
-                <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
-              </div>
-            </div>
+
+              <button
+                className="create-post-btn"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Gönderi Oluştur
+              </button>
+            </>
           ) : (
             <p>Kullanıcı bilgileri yükleniyor...</p>
           )}
@@ -142,7 +170,7 @@ function HomePage() {
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
-                placeholder="Mezun ara..."
+                placeholder="arama yap..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -200,6 +228,13 @@ function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Create Post Modal */}
+      <CreatePostModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPostCreated={handlePostCreated}
+      />
     </div>
   );
 }

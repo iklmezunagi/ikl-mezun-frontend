@@ -18,14 +18,13 @@ export async function getAllPostsPaged(page = 1) {
   return response.json();
 }
 
-
-
-
-// Bir kullanıcının tüm postlarını getirir (page parametresi yok, backend destekliyorsa eklenebilir)
-export async function getPostsByUserId(studentId) {
+export async function getPostsByUserId(studentId, page = 1) {
   const token = localStorage.getItem('token');
 
-  const response = await fetch(`${API_BASE_URL}/Post/user/${studentId}/posts`, {
+  const url = new URL(`${API_BASE_URL}/Post/user/${studentId}/posts`);
+  url.searchParams.append('page', page);
+
+  const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -38,6 +37,7 @@ export async function getPostsByUserId(studentId) {
 
   return response.json();
 }
+
 
 // Post oluştur
 export async function createPost(content) {

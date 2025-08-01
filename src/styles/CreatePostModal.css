@@ -1,0 +1,84 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-content textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.error-message {
+  color: #ff4d4f;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.modal-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-buttons button[type="button"] {
+  background: #eee;
+  color: #333;
+}
+
+.modal-buttons button[type="button"]:hover {
+  background: #ddd;
+}
+
+.modal-buttons button[type="submit"] {
+  background: #4a76a8;
+  color: white;
+}
+
+.modal-buttons button[type="submit"]:hover {
+  background: #3a5f8a;
+}
+
+.modal-buttons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
