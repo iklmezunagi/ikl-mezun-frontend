@@ -1,11 +1,15 @@
-/* form.css */
+/* form.css - Ortak form stilleri */
+
 .form-container {
-  max-width: 400px;
+  max-width: 550px;
+  max-height: 85vh;
   margin: 50px auto;
-  padding: 20px;
-  background: #f9f9f9;
+  padding: 40px;
+  background: #eedad4;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 .form-container input,
@@ -18,13 +22,22 @@
   border-radius: 4px;
   box-sizing: border-box;
   font-size: 16px;
+  transition: border-color 0.3s ease;
 }
 
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+  border-color: #73160e;
+  outline: none;
+}
+
+.submit-button,
 .form-container button {
   width: 100%;
   padding: 12px;
   margin-top: 15px;
-  background-color: #1976d2;
+  background-color: #310904;
   color: white;
   border: none;
   border-radius: 5px;
@@ -33,6 +46,58 @@
   transition: background-color 0.3s ease;
 }
 
+.submit-button:hover,
 .form-container button:hover {
-  background-color: #1565c0;
+  background-color: #73160e;
+}
+
+.error-message {
+  color: #cc0000;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #007700;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* Link stilleri */
+.login-link,
+.register-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.login-link a,
+.register-link a {
+  color: #310904;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover,
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* Radio Button ortak container */
+.highSchoolStatusContainer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.highSchoolStatusContainer label {
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+}
+
+.highSchoolStatusContainer input[type="radio"] {
+  margin-right: 6px;
+  cursor: pointer;
 }

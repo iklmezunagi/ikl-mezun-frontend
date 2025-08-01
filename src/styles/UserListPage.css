@@ -1,0 +1,111 @@
+/* UserListPage.css */
+.user-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.user-list-container h2 {
+  text-align: center;
+  color: #4a76a8;
+  margin-bottom: 30px;
+}
+
+.error {
+  color: #ff4d4f;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #4a76a8;
+  font-size: 18px;
+}
+
+.loading-spinner i {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.user-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.user-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 15px;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info {
+  text-align: center;
+}
+
+.user-info h3 {
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.user-info p {
+  margin: 8px 0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.user-info i {
+  color: #4a76a8;
+}
+
+.user-bio {
+  margin-top: 15px !important;
+  font-size: 14px;
+  color: #555;
+  text-align: left;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.no-users {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  grid-column: 1 / -1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .user-cards {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}

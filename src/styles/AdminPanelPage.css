@@ -1,0 +1,25 @@
+/* src/styles/AdminPanelPage.css */
+
+.admin-panel-container {
+  padding: 2rem;
+  text-align: center;
+}
+
+.admin-actions {
+  margin-top: 2rem;
+}
+
+.admin-actions button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.admin-actions button:hover {
+  background-color: #3b82f6;
+}

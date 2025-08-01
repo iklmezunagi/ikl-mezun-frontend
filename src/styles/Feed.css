@@ -1,0 +1,318 @@
+/* General resets and container */
+.feed-container {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 0 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+/* No posts message */
+.no-posts {
+  text-align: center;
+  color: #777;
+  padding: 30px 0;
+  font-size: 1.1rem;
+}
+
+/* Each post card */
+.post-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.05);
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Post header */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* User info */
+.post-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #ccc;
+  background-color: #eee;
+}
+
+.post-user-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+/* Post header actions: like & delete */
+.post-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Like button header */
+.like-btn-header {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #aaa;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.like-btn-header.liked {
+  color: #e0245e; /* red color for liked */
+}
+
+.like-btn-header:hover {
+  color: #e0245e;
+}
+
+/* Like count next to heart */
+.like-count {
+  font-weight: 600;
+  color: #555;
+  min-width: 26px;
+  text-align: center;
+  user-select: none;
+  font-size: 0.95rem;
+}
+
+/* Delete post button */
+.delete-post-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 1.15rem;
+  transition: color 0.3s ease;
+}
+
+.delete-post-btn:hover {
+  color: #d33;
+}
+
+/* Post content */
+.post-content {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.post-image {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
+}
+
+/* Post time */
+.post-time {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 15px;
+  user-select: none;
+}
+
+/* Comments section */
+.comments-section {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Single comment */
+.comment {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 5px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  position: relative;
+}
+
+/* Comment user info */
+.comment-user-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.comment-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.2px solid #ccc;
+  background-color: #ddd;
+  margin-top: 2px;
+}
+
+/* Comment content */
+.comment-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #222;
+  margin-bottom: 3px;
+}
+
+.comment-content p {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Delete comment button */
+.delete-comment-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 3px 6px;
+  align-self: start;
+}
+
+.delete-comment-btn:hover {
+  color: #d33;
+}
+
+/* Add comment input area */
+.add-comment {
+  margin-top: 5px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.add-comment input[type="text"] {
+  flex-grow: 1;
+  border: 1.5px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 15px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+  outline: none;
+}
+
+.add-comment input[type="text"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+/* Comment submit button */
+.comment-submit-btn {
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.comment-submit-btn:hover {
+  background-color: #357abd;
+}
+
+/* Pagination container */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 25px 0 30px;
+}
+
+/* Pagination buttons */
+.pagination-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.pagination-btn:hover {
+  background-color: #357abd;
+}
+
+.pagination-btn:disabled,
+.pagination-btn[disabled] {
+  background-color: #a5c1f0;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .feed-container {
+    padding: 0 10px;
+  }
+
+  .post-user-name {
+    font-size: 1rem;
+  }
+
+  .post-content {
+    font-size: 0.95rem;
+  }
+
+  .comment-user-name {
+    font-size: 0.9rem;
+  }
+
+  .comment-content p {
+    font-size: 0.85rem;
+  }
+
+  .pagination-btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,8 +1,7 @@
-// src/services/authService.js
+// src/services/AuthService.js
 
 const API_BASE_URL = 'http://localhost:5142/api';
 
-// src/services/authService.js
 
 
 export async function registerStudent(registerData) {
