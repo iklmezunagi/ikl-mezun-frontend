@@ -5,22 +5,43 @@ function ProfileField({ label, value, onChange, type = 'text', options = [], pla
   const [isEditing, setIsEditing] = useState(false);
   const [localValue, setLocalValue] = useState(value || '');
 
-  // Gelen value değişirse localValue da güncellenmeli
+  // Dışarıdan value değişirse güncelle
   useEffect(() => {
     setLocalValue(value || '');
   }, [value]);
 
-  // Kalem ikonuna tıklayınca düzenleme moduna geç
+  // Düzenleme modunu aç/kapa
   const toggleEdit = () => {
     setIsEditing(!isEditing);
-    setLocalValue(value || ''); // Düzenlemeye başlarken değeri güncelle
+    setLocalValue(value || '');
   };
 
-  // Değer değişince üst bileşene bildir
+  // Input veya textarea değişince üst bileşene bildir
   const handleChange = (e) => {
-    let val = e.target.value;
+    const val = e.target.value;
     setLocalValue(val);
     if (onChange) onChange(val);
+  };
+
+  // Radio buttonlar için özel render
+  const renderRadioButtons = () => {
+    if (options.length === 0) return null;
+
+    return options.map((opt, i) => (
+      <label key={i} style={{ marginRight: '20px', cursor: 'pointer' }}>
+        <input
+          type="radio"
+          name={label.replace(/\s+/g, '')} // unique name için boşlukları kaldırdık
+          value={opt}
+          checked={localValue === opt}
+          onChange={() => {
+            setLocalValue(opt);
+            if (onChange) onChange(opt);
+          }}
+        />
+        {' '}{opt}
+      </label>
+    ));
   };
 
   return (
@@ -28,11 +49,20 @@ function ProfileField({ label, value, onChange, type = 'text', options = [], pla
       <label>{label}</label>
 
       {!isEditing && (
-        <div className="field-display" onClick={toggleEdit} style={{ cursor: 'pointer' }}>
+        <div
+          className="field-display"
+          onClick={toggleEdit}
+          style={{ cursor: 'pointer' }}
+          title="Düzenlemek için tıklayın"
+        >
           {value ? (
             <>
               {value}
-              <span className="edit-icon" title="Düzenle" style={{ marginLeft: 8, color: '#555' }}>
+              <span
+                className="edit-icon"
+                title="Düzenle"
+                style={{ marginLeft: 8, color: '#555', userSelect: 'none' }}
+              >
                 &#9998;
               </span>
             </>
@@ -44,6 +74,8 @@ function ProfileField({ label, value, onChange, type = 'text', options = [], pla
 
       {isEditing && (
         <>
+          {type === 'radio' && renderRadioButtons()}
+
           {type === 'textarea' && (
             <textarea
               value={localValue}
@@ -56,7 +88,12 @@ function ProfileField({ label, value, onChange, type = 'text', options = [], pla
           )}
 
           {type === 'select' && (
-            <select value={localValue} onChange={handleChange} onBlur={toggleEdit} autoFocus>
+            <select
+              value={localValue}
+              onChange={handleChange}
+              onBlur={toggleEdit}
+              autoFocus
+            >
               <option value="">Seçiniz</option>
               {options.map((opt, i) => (
                 <option key={i} value={opt}>

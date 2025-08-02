@@ -149,10 +149,13 @@ function ProfilePage() {
           <ProfileField label="Email" value={formData.email} onChange={val => onFieldChange('email', val)} />
 
           <ProfileField
-            label="Lise Durumu"
-            value={formData.highSchoolStatus}
-            onChange={val => onFieldChange('highSchoolStatus', val)}
-          />
+          label="Lise Durumu"
+          value={formData.highSchoolStatus}
+          onChange={val => onFieldChange('highSchoolStatus', val)}
+          type="radio"
+          options={['Mezun', 'Öğrenci']}
+        />
+
           <ProfileField
             label="Lise Mezuniyet Yılı"
             value={formData.highSchoolGraduateYear}

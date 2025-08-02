@@ -2,26 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
-import { getStudentProfileById } from '../services/StudentService'; // username'den id'ye değişti
+import { getStudentProfileById, getStudentProfileByUsername } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
 
 import Feed from '../components/Feed'; 
 import '../styles/VisitProfile.css';
 
 function VisitProfilePage() {
-  const { studentId } = useParams();  // username değil studentId alıyoruz
-
+  const { studentId, username } = useParams(); // Get both possible parameters
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch profile based on either ID or username
   useEffect(() => {
-    if (!studentId) return;
+    if (!studentId && !username) return;
 
     setLoadingProfile(true);
-    getStudentProfileById(studentId)
+    
+    const fetchProfile = username 
+      ? getStudentProfileByUsername(username)
+      : getStudentProfileById(studentId);
+
+    fetchProfile
       .then((res) => {
         if (res.isSuccess) {
           setProfile(res.data);
@@ -36,8 +41,9 @@ function VisitProfilePage() {
         setProfile(null);
       })
       .finally(() => setLoadingProfile(false));
-  }, [studentId]);
+  }, [studentId, username]);
 
+  // Fetch posts when profile is loaded
   useEffect(() => {
     if (!profile || !profile.studentId) return;
 
@@ -75,6 +81,7 @@ function VisitProfilePage() {
       <div className="visit-profile-container">
         <section className="profile-info">
           <h2>{profile.firstName} {profile.lastName}</h2>
+          <p><strong>Kullanıcı Adı:</strong> {profile.username}</p>
           <p><strong>Meslek:</strong> {profile.profession}</p>
           <p><strong>Şehir:</strong> {profile.city}</p>
           <p><strong>Biyografi:</strong> {profile.bio}</p>
@@ -82,7 +89,7 @@ function VisitProfilePage() {
           <p><strong>Üniversite:</strong> {profile.universityName}</p>
           
           {profile.highSchoolStatus.toLowerCase() === 'mezun' ? (
-            <p><strong>Lise:</strong> {profile.highSchoolStartYear} - {profile.highSchoolFinishYear} yılları arasında İzmir Kız Lisesi’nde okudu.</p>
+            <p><strong>Lise:</strong> {profile.highSchoolStartYear} - {profile.highSchoolFinishYear} yılları arasında İzmir Kız Lisesi'nde okudu.</p>
           ) : (
             <p><strong>Lise:</strong> {profile.highSchoolStartYear} yılından beri İzmir Kız Lisesi öğrencisi.</p>
           )}
