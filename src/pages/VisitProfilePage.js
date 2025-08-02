@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
-import { getStudentProfileByUsername } from '../services/StudentService';
+import { getStudentProfileById } from '../services/StudentService'; // username'den id'ye değişti
 import { getPostsByUserId } from '../services/PostService';
 
-import Feed from '../components/Feed';  // Feed'i buradan import et
+import Feed from '../components/Feed'; 
 import '../styles/VisitProfile.css';
 
 function VisitProfilePage() {
-  const { username } = useParams();
+  const { studentId } = useParams();  // username değil studentId alıyoruz
 
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -18,10 +18,10 @@ function VisitProfilePage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!username) return;
+    if (!studentId) return;
 
     setLoadingProfile(true);
-    getStudentProfileByUsername(username)
+    getStudentProfileById(studentId)
       .then((res) => {
         if (res.isSuccess) {
           setProfile(res.data);
@@ -36,7 +36,7 @@ function VisitProfilePage() {
         setProfile(null);
       })
       .finally(() => setLoadingProfile(false));
-  }, [username]);
+  }, [studentId]);
 
   useEffect(() => {
     if (!profile || !profile.studentId) return;
@@ -72,33 +72,38 @@ function VisitProfilePage() {
   return (
     <>
       <Navbar />
-    <div className="visit-profile-container">
-      <section className="profile-info">
-        <h2>{profile.firstName} {profile.lastName}</h2>
-        <p><strong>Meslek:</strong> {profile.profession}</p>
-        <p><strong>Şehir:</strong> {profile.city}</p>
-        <p><strong>Biyografi:</strong> {profile.bio}</p>
-        <p><strong>Okul Durumu:</strong> {profile.highSchoolStatus}</p>
-        <p><strong>Üniversite:</strong> {profile.universityName}</p>
-        <p><strong>Lise Başlangıç - Bitiş:</strong> {profile.highSchoolStartYear} - {profile.highSchoolFinishYear}</p>
-        <p><strong>Email:</strong> {profile.email}</p>
-      </section>
+      <div className="visit-profile-container">
+        <section className="profile-info">
+          <h2>{profile.firstName} {profile.lastName}</h2>
+          <p><strong>Meslek:</strong> {profile.profession}</p>
+          <p><strong>Şehir:</strong> {profile.city}</p>
+          <p><strong>Biyografi:</strong> {profile.bio}</p>
+          <p><strong>Okul Durumu:</strong> {profile.highSchoolStatus}</p>
+          <p><strong>Üniversite:</strong> {profile.universityName}</p>
+          
+          {profile.highSchoolStatus.toLowerCase() === 'mezun' ? (
+            <p><strong>Lise:</strong> {profile.highSchoolStartYear} - {profile.highSchoolFinishYear} yılları arasında İzmir Kız Lisesi’nde okudu.</p>
+          ) : (
+            <p><strong>Lise:</strong> {profile.highSchoolStartYear} yılından beri İzmir Kız Lisesi öğrencisi.</p>
+          )}
 
-      <section className="posts-section">
-        <h3>Gönderiler</h3>
+          <p><strong>Email:</strong> {profile.email}</p>
+        </section>
 
-        {loadingPosts && <p>Gönderiler yükleniyor...</p>}
-        {!loadingPosts && posts.length === 0 && <p>Gönderi bulunamadı.</p>}
+        <section className="posts-section">
+          <h3>Gönderiler</h3>
 
-        {/* Burada Feed bileşenini çağırıyoruz */}
-        <Feed
-          posts={posts}
-          currentUser={{ studentId: currentUserId }}
-          onUpdate={refreshPosts}
-        />
-      </section>
-    </div>
-     </>
+          {loadingPosts && <p>Gönderiler yükleniyor...</p>}
+          {!loadingPosts && posts.length === 0 && <p>Gönderi bulunamadı.</p>}
+
+          <Feed
+            posts={posts}
+            currentUser={{ studentId: currentUserId }}
+            onUpdate={refreshPosts}
+          />
+        </section>
+      </div>
+    </>
   );
 }
 

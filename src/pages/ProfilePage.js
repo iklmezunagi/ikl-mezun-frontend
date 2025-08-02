@@ -7,8 +7,9 @@ import { getPostsByUserId } from '../services/PostService';
 import '../styles/ProfilePage.css';
 
 function ProfilePage() {
+  // Anahtarları küçük harfli tutmak daha sağlıklı olur
   const username = localStorage.getItem('username');
-  const userId = localStorage.getItem('userId') || null;
+  const userId = localStorage.getItem('studentId'); // burada küçük harf kullandım
 
   const currentUser = userId ? { studentId: userId } : null;
 
@@ -37,7 +38,6 @@ function ProfilePage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Profil bilgilerini getir
   useEffect(() => {
     if (!username) return;
 
@@ -46,10 +46,10 @@ function ProfilePage() {
         const uniRaw = res.data.universityName || '';
         const cleanUni = uniRaw.toLowerCase().includes('belirtilmemiş') ? '' : uniRaw;
         setFormData({
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          email: res.data.email,
-          highSchoolStatus: res.data.highSchoolStatus,
+          firstName: res.data.firstName || '',
+          lastName: res.data.lastName || '',
+          email: res.data.email || '',
+          highSchoolStatus: res.data.highSchoolStatus || '',
           highSchoolGraduateYear: res.data.highSchoolFinishYear || '',
           bio: res.data.bio || '',
           profession: res.data.profession || '',
@@ -63,26 +63,24 @@ function ProfilePage() {
     }).catch(err => setError(err.message));
   }, [username]);
 
-  // Postları getir
+
   useEffect(() => {
-    if (!userId) return;
+  if (!userId) return;
 
-    const fetchPosts = async () => {
-      setLoadingPosts(true);
-      try {
-        const res = await getPostsByUserId(userId, page);
-        setPosts(res);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoadingPosts(false);
-      }
-    };
+  setLoadingPosts(true);
+  getPostsByUserId(userId, page)
+    .then(res => {
+      console.log('ProfilePage posts:', res);
+      res.forEach(post => {
+        console.log(`PostId: ${post.postId}, isLiked: ${post.isLiked}`);
+      });
+      setPosts(res);
+    })
+    .catch(err => console.error('Gönderiler alınamadı:', err))
+    .finally(() => setLoadingPosts(false));
+}, [userId, page]);
 
-    fetchPosts();
-  }, [userId, page]);
 
-  // Meslekleri yükle
   useEffect(() => {
     fetch('/data/meslekler.json')
       .then(res => res.json())
@@ -90,7 +88,6 @@ function ProfilePage() {
       .catch(err => console.error('Meslekler yüklenemedi:', err));
   }, []);
 
-  // Üniversiteleri yükle
   useEffect(() => {
     fetch('/data/uni.json')
       .then(res => res.json())
@@ -98,12 +95,11 @@ function ProfilePage() {
       .catch(err => console.error('Üniversiteler yüklenemedi:', err));
   }, []);
 
-  // Şehirleri yükle
   useEffect(() => {
     fetch('https://turkiyeapi.dev/api/v1/provinces')
       .then(res => res.json())
       .then(data => {
-        if (data.status === 'OK') {
+        if (data.status === 'OK' && Array.isArray(data.data)) {
           setCities(data.data.map(city => city.name));
         }
       })
@@ -148,9 +144,9 @@ function ProfilePage() {
         <div className="profile-left">
           <h2>Profil Bilgilerim</h2>
 
-          <ProfileField label="İsim" value={formData.firstName} onChange={() => {}} />
-          <ProfileField label="Soyisim" value={formData.lastName} onChange={() => {}} />
-          <ProfileField label="Email" value={formData.email} onChange={() => {}} />
+          <ProfileField label="İsim" value={formData.firstName} onChange={val => onFieldChange('firstName', val)} />
+          <ProfileField label="Soyisim" value={formData.lastName} onChange={val => onFieldChange('lastName', val)} />
+          <ProfileField label="Email" value={formData.email} onChange={val => onFieldChange('email', val)} />
 
           <ProfileField
             label="Lise Durumu"

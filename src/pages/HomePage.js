@@ -2,28 +2,23 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
 import CreatePostModal from '../components/CreatePostModal';
-import { getStudentProfileByUsername } from '../services/StudentService';
-import { getAllPostsPaged, createPost } from '../services/PostService';
+import { getStudentProfileById } from '../services/StudentService';  
+import { getAllPostsPaged, createPost, getAllAnnouncements } from '../services/PostService';
 import { useNavigate } from 'react-router-dom';
 
 import '../styles/Homepage.css';
 import defaultProfile from '../assets/default-profile.png';
+import '../styles/AnnouncementSlider.css';
 
 function HomePage() {
   const navigate = useNavigate();
 
-  // Kullanıcı profil bilgisi
   const [currentUser, setCurrentUser] = useState(null);
-
-  // Gönderiler ve sayfa numarası
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loadingPosts, setLoadingPosts] = useState(true);
-
-  // Modal açık-kapalı durumu
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Arama ve filtreler
   const [searchTerm, setSearchTerm] = useState('');
   const [universities, setUniversities] = useState([]);
   const [professions, setProfessions] = useState([]);
@@ -32,17 +27,22 @@ function HomePage() {
     profession: '',
   });
 
-  // localStorage'dan username al
-  const username = localStorage.getItem('username');
+  const [announcements, setAnnouncements] = useState([]);
+  const [annIndex, setAnnIndex] = useState(0);
 
-  // Kullanıcı profilini çek
+const studentId = localStorage.getItem('studentId'); 
+
+  // Kullanıcı profilini ID ile çek
   useEffect(() => {
-    if (!username) return;
+    if (!studentId) return;
 
-    getStudentProfileByUsername(username)
+    getStudentProfileById(studentId)
       .then(res => {
+        console.log('API response for user profile:', res); // Kontrol için log
+        console.log('LocalStorage studentId:', localStorage.getItem('studentId'));
+
         if (res.isSuccess && res.data) {
-          setCurrentUser(res.data);
+          setCurrentUser(res.data); // data içindeki kullanıcı objesi
         } else {
           setCurrentUser(null);
           console.error('Profil bilgisi alınamadı:', res.failMessage);
@@ -52,7 +52,7 @@ function HomePage() {
         setCurrentUser(null);
         console.error('Profil çağrısı hatası:', err.message);
       });
-  }, [username]);
+  }, [studentId]);
 
   // Gönderileri getir (sayfalı)
   useEffect(() => {
@@ -60,7 +60,7 @@ function HomePage() {
       setLoadingPosts(true);
       try {
         const data = await getAllPostsPaged(page);
-        setPosts(data.data || data); // backend dönüşüne göre uyarlayın
+        setPosts(data.data || data);
       } catch (err) {
         console.error('Gönderiler alınamadı:', err);
       } finally {
@@ -87,7 +87,7 @@ function HomePage() {
       .catch(err => console.error('Üniversiteler yüklenemedi:', err));
   }, []);
 
-  // Arama butonuna basınca sayfa 1 ile arama yapacak:
+  // Arama butonuna basınca sayfa 1 ile arama yapacak
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -95,7 +95,7 @@ function HomePage() {
     }
   };
 
-  // Üniversite filtresi değişince sayfa 1 ile
+  // Üniversite filtresi değişince sayfa 1 ile git
   const handleUniversityFilter = (uni) => {
     setFilterOptions(prev => ({ ...prev, university: uni }));
     if (uni) {
@@ -105,7 +105,7 @@ function HomePage() {
     }
   };
 
-  // Meslek filtresi değişince sayfa 1 ile
+  // Meslek filtresi değişince sayfa 1 ile git
   const handleProfessionFilter = (prof) => {
     setFilterOptions(prev => ({ ...prev, profession: prof }));
     if (prof) {
@@ -119,8 +119,7 @@ function HomePage() {
   const handlePostCreated = async (content) => {
     try {
       await createPost(content);
-      setPage(1); // Yeni gönderi eklenince anasayfayı 1. sayfaya getir
-      // Gönderileri tekrar yükle:
+      setPage(1);
       const data = await getAllPostsPaged(1);
       setPosts(data.data || data);
     } catch (err) {
@@ -128,12 +127,30 @@ function HomePage() {
     }
   };
 
+  // Duyuruları getir
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await getAllAnnouncements();
+        if (res.isSuccess && Array.isArray(res.data)) {
+          setAnnouncements(res.data);
+        } else {
+          setAnnouncements([]);
+        }
+      } catch (err) {
+        console.error('Duyurular alınamadı:', err);
+        setAnnouncements([]);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
+
   return (
     <div className="home-page">
-      <Navbar currentUser={currentUser} />
+      <Navbar />
 
       <div className="home-container">
-        {/* Sol Sidebar - Kullanıcı Kartı ve Create Post Butonu */}
+        {/* Sol Sidebar */}
         <div className="left-sidebar">
           {currentUser ? (
             <>
@@ -145,9 +162,15 @@ function HomePage() {
                   />
                 </div>
                 <div className="user-info">
-                  <h3>{currentUser.firstName} {currentUser.lastName}</h3>
-                  <p>{currentUser.profession}</p>
-                  <p>{currentUser.universityName || currentUser.university}</p>
+                  <h3
+                    className="clickable-name"
+                    onClick={() => navigate(`/visit-profile-id/${currentUser.studentId}`)}
+                    style={{ cursor: 'pointer', color: '#007bff', textDecoration: 'underline' }}
+                  >
+                    {currentUser.firstName} {currentUser.lastName}
+                  </h3>
+                  <p>{currentUser.profession || 'Belirtilmemiş'}</p>
+                  <p>{currentUser.universityName || currentUser.university || 'Belirtilmemiş'}</p>
                   <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
                 </div>
               </div>
@@ -164,7 +187,7 @@ function HomePage() {
           )}
         </div>
 
-        {/* Orta Ana İçerik - Gönderiler ve Arama */}
+        {/* Orta Ana İçerik */}
         <div className="main-content">
           <div className="search-container">
             <form onSubmit={handleSearch} className="search-form">
@@ -176,6 +199,33 @@ function HomePage() {
               />
               <button type="submit">Ara</button>
             </form>
+          </div>
+
+          <div className="announcement-slider-wrapper">
+            <h3>Duyurular</h3>
+            {announcements.length === 0 ? (
+              <p>Henüz duyuru yok.</p>
+            ) : (
+              <>
+                <div className="announcement-slider">
+                  <div className="announcement-card" style={{ flex: '1 1 100%' }}>
+                    <h4>{announcements[annIndex].title}</h4>
+                    <p>{announcements[annIndex].content.length > 100 ? announcements[annIndex].content.slice(0, 100) + '...' : announcements[annIndex].content}</p>
+                    <div className="announcement-meta">
+                      {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
+                    </div>
+                  </div>
+                </div>
+                <div className="slider-buttons">
+                  <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
+                    &lt; Önceki
+                  </button>
+                  <button onClick={() => setAnnIndex((prev) => (prev + 1) % announcements.length)}>
+                    Sonraki &gt;
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {loadingPosts ? (
@@ -191,7 +241,7 @@ function HomePage() {
           )}
         </div>
 
-        {/* Sağ Sidebar - Filtreler */}
+        {/* Sağ Sidebar */}
         <div className="right-sidebar">
           <div className="filter-section">
             <h2>Mezunlarımızla Tanışın</h2>
@@ -229,7 +279,6 @@ function HomePage() {
         </div>
       </div>
 
-      {/* Create Post Modal */}
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

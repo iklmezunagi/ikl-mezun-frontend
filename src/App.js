@@ -19,7 +19,10 @@ function App() {
         <Route path="/myprofile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminPanelPage />} />
         <Route path="/userList" element={<UserListPage />} />
-        <Route path="/visit-profile/:username" element={<VisitProfilePage />} />
+""""""""<Route path="/visit-profile-id/:studentId" element={<VisitProfilePage />} />
+        <Route path="/visit-profile-username/:username" element={<VisitProfilePage />} />
+
+
 
       </Routes>
     </Router>

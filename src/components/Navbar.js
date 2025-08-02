@@ -34,7 +34,7 @@ function Navbar() {
               <button onClick={() => navigate('/home')}>Ana Sayfa</button>
             )}
             {isHomePage && (
-              <button onClick={() => navigate('/myprofile')}>Profilim</button>
+              <button onClick={() => navigate('/myprofile')}>Profili Düzenle</button>
             )}
             {!isProfilePage && !isHomePage && (
               <>

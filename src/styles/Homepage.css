@@ -18,7 +18,6 @@
 
 .left-sidebar {
   width: 300px;
-  position: sticky;
   top: 80px;
   height: fit-content;
 }
@@ -30,7 +29,6 @@
 
 .right-sidebar {
   width: 300px;
-  position: sticky;
   top: 80px;
   height: fit-content;
 }

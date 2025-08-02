@@ -60,6 +60,23 @@ export async function createPost(content) {
   return response.json();
 }
 
+
+export async function getAllAnnouncements() {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/Admin/get-all-announcements`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Duyurular alınamadı.');
+  }
+  return response.json();
+}
+
+
 // Yorumu ekle
 export async function addComment(postId, commentContent) {
   const token = localStorage.getItem('token');

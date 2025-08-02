@@ -68,6 +68,26 @@ export async function getStudentProfileByUsername(username) {
   return response.json();
 }
 
+
+export async function getStudentProfileById(id) {
+  const token = localStorage.getItem('token');
+  const response = await fetch( `${API_BASE_URL}/Student/visit-profile/by-id/${id}`, {
+   
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.failMessage || 'Profil alınamadı');
+  }
+
+  const json = await response.json();
+  return json;
+}
+
+
 // Profil düzenle
 export async function editProfile(profileData) {
   const token = localStorage.getItem('token');

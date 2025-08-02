@@ -9,6 +9,7 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
   const [commentInputs, setCommentInputs] = useState({});
   const [localPosts, setLocalPosts] = useState(posts);
 
+  // posts prop değişince localPosts'u güncelle
   useEffect(() => {
     setLocalPosts(posts);
   }, [posts]);
@@ -35,7 +36,7 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
       await toggleLike(postId);
     } catch (err) {
       alert('Beğeni işlemi başarısız: ' + err.message);
-      onUpdate();
+      onUpdate(); // başarısızsa postları yeniden çek
     }
   };
 
@@ -75,7 +76,7 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
   };
 
   const handleUserClick = (username) => {
-    navigate(`/visit-profile/${username}`);
+    navigate(`/visit-profile-username/${username}`);
   };
 
   return (
@@ -101,9 +102,6 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
                     >
                       {post.firstName} {post.lastName}
                     </button>
-                    {/* <div className="post-username" onClick={() => handleUserClick(post.username)}>
-                      {post.username}
-                    </div> */}
                     <div className="post-time">{new Date(post.createdAt).toLocaleString()}</div>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import {
 } from '../services/StudentService';
 import Navbar from '../components/Navbar';
 import '../styles/UserListPage.css';
+import defaultProfile from '../assets/default-profile.png';
 
 function UserListPage() {
   const location = useLocation();
@@ -16,7 +17,7 @@ function UserListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Paging state
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const pageSize = 10; // backend ile uyumlu
@@ -48,7 +49,7 @@ function UserListPage() {
       } else {
         navigate('/'); // Eğer hiçbir filtre yoksa ana sayfaya yönlendir
         return;
-        }
+      }
 
       if (response.isSuccess) {
         setUsers(response.data);
@@ -114,8 +115,9 @@ function UserListPage() {
     );
   };
 
+  // Kullanıcı kartına tıklayınca profil sayfasına ID ile git
   const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
+    navigate(`/visit-profile-id/${userId}`);
   };
 
   return (
@@ -142,7 +144,7 @@ function UserListPage() {
                   >
                     <div className="user-avatar">
                       <img 
-                        src={user.profileImage || '/default-profile.png'} 
+                        src={user.profileImage || defaultProfile} 
                         alt={`${user.firstName} ${user.lastName}`}
                       />
                     </div>
@@ -167,6 +169,5 @@ function UserListPage() {
     </>
   );
 }
-
 
 export default UserListPage;

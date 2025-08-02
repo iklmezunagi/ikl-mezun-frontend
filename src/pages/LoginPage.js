@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import '../styles/form.css';
 import '../styles/LoginPage.css';
 
+
 function LoginPage() {
   const [formData, setFormData] = useState({
     username: '',
@@ -29,8 +30,9 @@ const handleSubmit = async (e) => {
       // Burada response.data içinden alıyoruz!
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
-      localStorage.setItem('userId', response.data.id);
+      localStorage.setItem('studentId', response.data.id);  // burası önemli
       localStorage.setItem('isAdmin', response.data.isAdmin);
+
 
       setSuccessMessage(response.responseMessage || 'Giriş başarılı!');
       setErrorMessage('');
