@@ -92,7 +92,6 @@ function VisitProfilePage() {
       <div className="visit-profile-container">
         <section className="profile-info">
           <h2>{profile.firstName} {profile.lastName}</h2>
-          <p><strong>Kullanıcı Adı:</strong> {profile.username}</p>
           <p><strong>Meslek:</strong> {profile.profession}</p>
           <p><strong>Şehir:</strong> {profile.city}</p>
           <p><strong>Biyografi:</strong> {profile.bio}</p>

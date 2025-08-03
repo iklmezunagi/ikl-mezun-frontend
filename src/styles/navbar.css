@@ -1,3 +1,7 @@
+:root {
+  --deep-blue: #141d47;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -34,16 +38,18 @@
 .navbar-right button {
   padding: 8px 14px;
   font-size: 14px;
-  background-color: #005b96;
+  background-color: #24457e;  
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: none;
 }
 
 .navbar-right button:hover {
-  background-color: #003f6d;
+  background-color: var(--deep-blue);  /* lacivert */
+  box-shadow: 0 0 8px 2px var(--deep-blue)aa; /* lacivert glow */
 }
 
 @media (max-width: 600px) {

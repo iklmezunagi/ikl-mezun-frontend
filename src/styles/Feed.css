@@ -1,6 +1,6 @@
 .feed-container {
-  width: 100%;
-  max-width: 600px;
+  width: 98%;
+  max-width: 870px; /* yatayda daha geniş */
   margin: 0 auto;
   padding: 15px;
 }
@@ -17,6 +17,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 15px;
   transition: transform 0.2s;
+
+  overflow: hidden;  /* taşan içeriği gizle */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .post-card:hover {
@@ -128,28 +133,33 @@
 }
 
 .post-content {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-content p {
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #333;
+  max-height: 3.5em; /* yaklaşık 2 satır sınırı */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-image {
   width: 100%;
-  max-height: 400px;
   border-radius: 8px;
-  object-fit: contain;
+  object-fit: cover; /* contain yerine cover ile dolgun görünür */
   margin-top: 10px;
   background: #f5f5f5;
 }
 
 .comments-section {
-  margin-top: 15px;
+  margin-top: 10px;
   border-top: 1px solid #eee;
-  padding-top: 15px;
+  padding-top: 10px;
 }
 
 .comment {
@@ -244,9 +254,18 @@
 @media (max-width: 768px) {
   .feed-container {
     padding: 10px;
+    max-width: 100%;
   }
 
   .post-card {
-    padding: 12px;
+    max-height: none; /* mobilde yükseklik sınırı kalkar */
+  }
+
+  .post-image {
+    max-height: 180px; /* mobilde görsel biraz daha büyük */
+  }
+
+  .comments-section {
+    max-height: 100px;
   }
 }

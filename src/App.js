@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage';
 import VisitProfilePage from './pages/VisitProfilePage';
 import AdminPanelPage from './pages/AdminPanelPage';
 import UserListPage  from './pages/UserListPage';
+import AboutPage from './pages/AboutPage';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path="/userList" element={<UserListPage />} />
         <Route path="/visit-profile-id/:studentId" element={<VisitProfilePage />} />
         <Route path="/visit-profile-username/:username" element={<VisitProfilePage />} />
+        <Route path="/about" element={<AboutPage />} />
+
 
 
 

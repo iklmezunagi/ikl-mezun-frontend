@@ -156,6 +156,11 @@ function ProfilePage() {
         <div className="profile-left">
           <h2>Profil Bilgilerim</h2>
 
+            <div className="readonly-field">
+          <label>Kullanıcı Adı</label>
+          <input type="text" value={username || ''} readOnly />
+          </div>
+
           <ProfileField label="İsim" value={formData.firstName} onChange={val => onFieldChange('firstName', val)} />
           <ProfileField label="Soyisim" value={formData.lastName} onChange={val => onFieldChange('lastName', val)} />
           <ProfileField label="Email" value={formData.email} onChange={val => onFieldChange('email', val)} />

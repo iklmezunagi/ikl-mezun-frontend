@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../styles/form.css';
 import '../styles/RegisterPage.css';
+import Navbar from '../components/Navbar';
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -137,6 +138,8 @@ function RegisterPage() {
   };
 
   return (
+     <>
+      <Navbar />
     <div className="register-page">
       <h2>Kayıt Ol</h2>
       <form className="form-container" onSubmit={handleSubmit}>
@@ -282,6 +285,7 @@ function RegisterPage() {
         </p>
       </form>
     </div>
+       </>
   );
 }
 

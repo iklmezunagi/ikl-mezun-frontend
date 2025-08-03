@@ -30,7 +30,7 @@ const handleSubmit = async (e) => {
       // Burada response.data içinden alıyoruz!
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
-      localStorage.setItem('studentId', response.data.id);  // burası önemli
+      localStorage.setItem('studentId', response.data.id); 
       localStorage.setItem('isAdmin', response.data.isAdmin);
 
 
