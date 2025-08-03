@@ -54,6 +54,14 @@ const studentId = localStorage.getItem('studentId');
       });
   }, [studentId]);
 
+  useEffect(() => {
+    var token = localStorage.getItem('token')
+    if (token === null) {
+      navigate('/')
+    }
+
+  }, [])
+
   // Gönderileri getir (sayfalı)
   useEffect(() => {
     const fetchPosts = async () => {

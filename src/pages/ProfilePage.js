@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ProfileField from '../components/ProfileField';
 import Feed from '../components/Feed';
@@ -10,6 +11,9 @@ function ProfilePage() {
   // Anahtarları küçük harfli tutmak daha sağlıklı olur
   const username = localStorage.getItem('username');
   const userId = localStorage.getItem('studentId'); // burada küçük harf kullandım
+
+  const navigate = useNavigate();
+  
 
   const currentUser = userId ? { studentId: userId } : null;
 
@@ -37,6 +41,14 @@ function ProfilePage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+      var token = localStorage.getItem('token')
+      if (token === null) {
+        navigate('/')
+      }
+  
+  }, [])
 
   useEffect(() => {
     if (!username) return;

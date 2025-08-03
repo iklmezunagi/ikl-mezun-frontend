@@ -1,4 +1,6 @@
 // src/pages/AdminPanelPage.js
+import { useNavigate } from 'react-router-dom';
+
 import React, { useState, useEffect } from 'react';
 import {
   giveAdmin,
@@ -12,6 +14,7 @@ import Navbar from '../components/Navbar';
 
 
 function AdminPanelPage() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementContent, setAnnouncementContent] = useState('');
@@ -30,6 +33,14 @@ const fetchAnnouncements = async () => {
   useEffect(() => {
     fetchAnnouncements();
   }, [page]);
+
+  useEffect(() => {
+      var token = localStorage.getItem('token')
+      if (token === null) {
+        navigate('/')
+      }
+  
+  }, [])
 
   const handleGiveAdmin = async () => {
     try {

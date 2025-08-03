@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
+
 
 import { getStudentProfileById, getStudentProfileByUsername } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
@@ -15,6 +17,7 @@ function VisitProfilePage() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch profile based on either ID or username
   useEffect(() => {
@@ -42,6 +45,14 @@ function VisitProfilePage() {
       })
       .finally(() => setLoadingProfile(false));
   }, [studentId, username]);
+
+    useEffect(() => {
+      var token = localStorage.getItem('token')
+      if (token === null) {
+        navigate('/')
+      }
+  
+  }, [])
 
   // Fetch posts when profile is loaded
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginStudent } from '../services/AuthService';
+import { loginStudent } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import '../styles/form.css';

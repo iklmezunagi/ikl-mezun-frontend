@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { registerStudent } from '../services/AuthService';
+import { registerStudent, loginStudent } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../styles/form.css';
 import '../styles/RegisterPage.css';
@@ -26,6 +27,8 @@ function RegisterPage() {
   const [customUniversity, setCustomUniversity] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const navigate = useNavigate();
 
   // Şehirleri çek
   useEffect(() => {
@@ -95,12 +98,42 @@ function RegisterPage() {
 
     try {
       const response = await registerStudent(finalFormData);
-      setSuccessMessage(response.responseMessage || 'Kayıt başarılı!');
+      setSuccessMessage(response.responseMessage || 'Kayıt başarılı! Yönlendiriliyorsunuz.');
       setErrorMessage('');
+
     } catch (err) {
       setErrorMessage(err.message || 'Kayıt başarısız oldu.');
       setSuccessMessage('');
     }
+
+    var loginData = {'Username': finalFormData.username, 'Password': finalFormData.password}
+    
+    try {
+    const response = await loginStudent(loginData);
+
+    if (response.isSuccess && response.data) {
+      // Burada response.data içinden alıyoruz!
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', response.data.username);
+      localStorage.setItem('studentId', response.data.id);  // burası önemli
+      localStorage.setItem('isAdmin', response.data.isAdmin);
+
+
+      setSuccessMessage(response.responseMessage || 'Giriş başarılı!');
+      setErrorMessage('');
+      
+      setTimeout(() => {
+        navigate('/home'); 
+      }, 1000);
+    } else {
+      setErrorMessage(response.failMessage || 'Giriş başarısız');
+      setSuccessMessage('');
+    }
+  } catch (err) {
+    setErrorMessage(err.message);
+    setSuccessMessage('');
+  }
+
   };
 
   return (
