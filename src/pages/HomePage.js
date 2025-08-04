@@ -155,77 +155,84 @@ const studentId = localStorage.getItem('studentId');
     fetchAnnouncements();
   }, []);
 
-  return (
-    <div className="home-page">
-      <Navbar />
+ return (
+  <div className="home-page">
+    <Navbar />
 
-      <div className="home-container">
-        {/* Sol Sidebar */}
-        <div className="left-sidebar">
-          {currentUser ? (
+    <div className="home-container">
+      {/* Sol Sidebar */}
+      <div className="left-sidebar">
+        {currentUser ? (
+          <>
+            <div className="user-card">
+              <div className="user-avatar">
+                <img
+                  src={currentUser.profileImage || defaultProfile}
+                  alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                />
+              </div>
+              <div className="user-info">
+                <h3
+                  className="clickable-name"
+                  onClick={() => navigate(`/visit-profile-id/${currentUser.studentId}`)}
+                  style={{ cursor: 'pointer', color: '#007bff', textDecoration: 'underline' }}
+                >
+                  {currentUser.firstName} {currentUser.lastName}
+                </h3>
+                <p>{currentUser.profession || 'Belirtilmemiş'}</p>
+                <p>{currentUser.universityName || currentUser.university || 'Belirtilmemiş'}</p>
+                <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
+              </div>
+            </div>
+
+            <button
+              className="create-post-btn"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Gönderi Oluştur
+            </button>
+          </>
+        ) : (
+          <p>Kullanıcı bilgileri yükleniyor...</p>
+        )}
+      </div>
+
+      {/* Orta Ana İçerik */}
+      <div className="main-content">
+        <div className="search-container">
+          <form onSubmit={handleSearch} className="search-form">
+            <input
+              type="text"
+              placeholder="arama yap..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            <button type="submit">Ara</button>
+          </form>
+        </div>
+
+        <div className="announcement-slider-wrapper">
+          <h3>Duyurular</h3>
+          {announcements.length === 0 ? (
+            <p>Henüz duyuru yok.</p>
+          ) : (
             <>
-              <div className="user-card">
-                <div className="user-avatar">
-                  <img
-                    src={currentUser.profileImage || defaultProfile}
-                    alt={`${currentUser.firstName} ${currentUser.lastName}`}
-                  />
-                </div>
-                <div className="user-info">
-                  <h3
-                    className="clickable-name"
-                    onClick={() => navigate(`/visit-profile-id/${currentUser.studentId}`)}
-                    style={{ cursor: 'pointer', color: '#007bff', textDecoration: 'underline' }}
-                  >
-                    {currentUser.firstName} {currentUser.lastName}
-                  </h3>
-                  <p>{currentUser.profession || 'Belirtilmemiş'}</p>
-                  <p>{currentUser.universityName || currentUser.university || 'Belirtilmemiş'}</p>
-                  <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
+              <div className="announcement-slider">
+                <div className="announcement-card" style={{ flex: '1 1 100%' }}>
+                  <h4>{announcements[annIndex].title}</h4>
+                  <p>
+                    {announcements[annIndex].content.length > 100
+                      ? announcements[annIndex].content.slice(0, 100) + '...'
+                      : announcements[annIndex].content}
+                  </p>
+                  <div className="announcement-meta">
+                    {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
+                  </div>
                 </div>
               </div>
 
-              <button
-                className="create-post-btn"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Gönderi Oluştur
-              </button>
-            </>
-          ) : (
-            <p>Kullanıcı bilgileri yükleniyor...</p>
-          )}
-        </div>
-
-        {/* Orta Ana İçerik */}
-        <div className="main-content">
-          <div className="search-container">
-            <form onSubmit={handleSearch} className="search-form">
-              <input
-                type="text"
-                placeholder="arama yap..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-              <button type="submit">Ara</button>
-            </form>
-          </div>
-
-          <div className="announcement-slider-wrapper">
-            <h3>Duyurular</h3>
-            {announcements.length === 0 ? (
-              <p>Henüz duyuru yok.</p>
-            ) : (
-              <>
-                <div className="announcement-slider">
-                  <div className="announcement-card" style={{ flex: '1 1 100%' }}>
-                    <h4>{announcements[annIndex].title}</h4>
-                    <p>{announcements[annIndex].content.length > 100 ? announcements[annIndex].content.slice(0, 100) + '...' : announcements[annIndex].content}</p>
-                    <div className="announcement-meta">
-                      {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
-                    </div>
-                  </div>
-                </div>
+              {/* Sadece 2 veya daha fazla duyuru varsa göster */}
+              {announcements.length >= 2 && (
                 <div className="slider-buttons">
                   <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
                     &lt; Önceki
@@ -234,70 +241,72 @@ const studentId = localStorage.getItem('studentId');
                     Sonraki &gt;
                   </button>
                 </div>
-              </>
-            )}
-          </div>
-
-          {loadingPosts ? (
-            <p>Gönderiler yükleniyor...</p>
-          ) : (
-            <Feed
-              posts={posts}
-              currentUser={currentUser}
-              page={page}
-              setPage={setPage}
-              onUpdate={() => setPage(1)}
-            />
+              )}
+            </>
           )}
         </div>
 
-        {/* Sağ Sidebar */}
-        <div className="right-sidebar">
-          <div className="filter-section">
-            <h2>Mezunlarımızla Tanışın</h2>
+        {loadingPosts ? (
+          <p>Gönderiler yükleniyor...</p>
+        ) : (
+          <Feed
+            posts={posts}
+            currentUser={currentUser}
+            page={page}
+            setPage={setPage}
+            onUpdate={() => setPage(1)}
+          />
+        )}
+      </div>
 
-            <div className="filter-group">
-              <h3>Üniversiteye Göre Filtrele</h3>
-              <select
-                value={filterOptions.university}
-                onChange={e => handleUniversityFilter(e.target.value)}
-              >
-                <option value="">Tüm Üniversiteler</option>
-                {universities.map((uni, idx) => (
-                  <option key={idx} value={uni}>
-                    {uni}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* Sağ Sidebar */}
+      <div className="right-sidebar">
+        <div className="filter-section">
+          <h2>Mezunlarımızla Tanışın</h2>
 
-            <div className="filter-group">
-              <h3>Mesleğe Göre Filtrele</h3>
-              <select
-                value={filterOptions.profession}
-                onChange={e => handleProfessionFilter(e.target.value)}
-              >
-                <option value="">Tüm Meslekler</option>
-                {professions.map((prof, idx) => (
-                  <option key={idx} value={prof}>
-                    {prof}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="filter-group">
+            <h3>Üniversiteye Göre Filtrele</h3>
+            <select
+              value={filterOptions.university}
+              onChange={e => handleUniversityFilter(e.target.value)}
+            >
+              <option value="">Tüm Üniversiteler</option>
+              {universities.map((uni, idx) => (
+                <option key={idx} value={uni}>
+                  {uni}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <h3>Mesleğe Göre Filtrele</h3>
+            <select
+              value={filterOptions.profession}
+              onChange={e => handleProfessionFilter(e.target.value)}
+            >
+              <option value="">Tüm Meslekler</option>
+              {professions.map((prof, idx) => (
+                <option key={idx} value={prof}>
+                  {prof}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-         
       </div>
-         <Footer />        
-      <CreatePostModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onPostCreated={handlePostCreated}
-      />
     </div>
-   
-  );
+
+    <Footer />
+
+    <CreatePostModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onPostCreated={handlePostCreated}
+    />
+  </div>
+);
+
 }
 
 export default HomePage;

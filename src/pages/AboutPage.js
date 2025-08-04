@@ -31,7 +31,7 @@ function AboutPage() {
             <section>
                 <p>
                 Mezun ağımız, öğrencilerimiz ve mezunlarımızın bir araya gelerek güçlü sosyal bağlar kurmasını sağlar.
-                Burada dostluklar gelişir, deneyimler paylaşılır ve anlamlı sohbetler edilir.
+                
                 </p>
             </section>
 
@@ -51,8 +51,8 @@ function AboutPage() {
 
             <section>
                 <p>
-                Bu sayede hem sosyal anlamda hem de kariyer planlamasında birbirimize güç katan,
-                dayanışma dolu bir topluluk oluşturmayı hedefliyoruz.
+                Hem sosyal anlamda hem de kariyer planlamasında birbirimize güç katan,
+                dayanışma dolu bir topluluk oluşturmak hedeflenmiştir.
                 </p>
             </section>
 

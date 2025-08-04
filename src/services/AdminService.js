@@ -77,3 +77,39 @@ export async function deleteAnnouncement(id) {
   if (!response.ok) throw new Error('Duyuru silinemedi.');
   return response.json();
 }
+
+// src/services/AdminService.js
+
+// Öğrencileri sayfalı getir
+export async function getAllUsersPaged(page) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/Admin/get-all-users/paged?page=${page}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.failMessage || 'Kullanıcılar alınamadı');
+  }
+
+  return response.json();
+}
+
+// Öğrenci sil
+export async function deleteStudent(id) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/Admin/delete-student/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.failMessage || 'Öğrenci silinemedi');
+  }
+
+  return response.json();
+}
