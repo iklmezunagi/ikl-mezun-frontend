@@ -15,6 +15,7 @@ function Footer() {
     { name: 'Yiğit Tınmaz', email: 'tnmazyigit@gmail.com' },
     { name: 'Kerem Salih Okumuş', email: 'keremsalihok@gmail.com' },
     { name: 'Can Sırrı', email: 'cansirri@icloud.com' },
+    { name: 'Rıfat Kaşıkçı', email: 'rifatkasikci@gmail.com ' }
   ];
 
   return (

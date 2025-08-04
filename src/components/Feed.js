@@ -9,7 +9,6 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
   const [commentInputs, setCommentInputs] = useState({});
   const [localPosts, setLocalPosts] = useState(posts);
 
-  // posts prop değişince localPosts'u güncelle
   useEffect(() => {
     setLocalPosts(posts);
   }, [posts]);
@@ -36,7 +35,7 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
       await toggleLike(postId);
     } catch (err) {
       alert('Beğeni işlemi başarısız: ' + err.message);
-      onUpdate(); // başarısızsa postları yeniden çek
+      onUpdate();
     }
   };
 
@@ -107,14 +106,28 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
                 </div>
 
                 <div className="post-actions">
+                  {/* Kalp Butonu */}
                   <button
                     className={`like-btn ${post.isLiked ? 'liked' : ''}`}
                     onClick={() => handleLike(post.postId)}
                     title={post.isLiked ? 'Beğeniyi kaldır' : 'Beğen'}
                   >
                     <i className={`fas fa-heart ${post.isLiked ? 'liked-icon' : ''}`}></i>
-                    <span className="like-count">{post.totalLikeCount}</span>
                   </button>
+
+                  {/* Beğeni Sayısı ve Hover ile beğenenlerin isimleri */}
+                  <div className="like-count-wrapper" title="Beğenenler">
+                    <span className="like-count">{post.totalLikeCount}</span>
+                    {post.likes && post.likes.length > 0 && (
+                      <div className="like-user-list">
+                        {post.likes.map((like, idx) => (
+                          <div key={idx} className="like-user-item">
+                            {like.firstName} {like.lastName}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   {isMyPost(post) && (
                     <button

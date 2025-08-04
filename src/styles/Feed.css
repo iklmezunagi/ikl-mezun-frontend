@@ -1,6 +1,6 @@
 .feed-container {
   width: 98%;
-  max-width: 870px; /* yatayda daha geniş */
+  max-width: 870px;
   margin: 0 auto;
   padding: 15px;
 }
@@ -14,11 +14,10 @@
 .post-card {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   padding: 15px;
   transition: transform 0.2s;
-
-  overflow: hidden;  /* taşan içeriği gizle */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -67,19 +66,6 @@
   color: #005bbb;
 }
 
-.post-username {
-  font-size: 0.85rem;
-  color: #999;
-  cursor: pointer;
-  margin-top: -4px;
-  margin-bottom: 4px;
-  user-select: none;
-}
-
-.post-username:hover {
-  color: #666;
-}
-
 .post-time {
   font-size: 12px;
   color: #666;
@@ -88,20 +74,22 @@
 .post-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  position: relative; /* tooltip için */
 }
 
+/* Kalp butonu */
 .like-btn {
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
   color: #666;
+  font-size: 18px;
   padding: 5px 8px;
   border-radius: 20px;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .like-btn:hover {
@@ -113,10 +101,63 @@
   color: #ff4d4f;
 }
 
-.like-count {
+/* Beğeni sayısı ve hover kutusu */
+.like-count-wrapper {
+  position: relative;
+  cursor: default;
   font-size: 14px;
+  color: #666;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f0f0f0;
+  transition: background 0.2s;
+  user-select: none;
 }
 
+.like-count-wrapper:hover {
+  background: #e0e0e0;
+}
+
+/* Hoverda beğenenler listesi */
+.like-user-list {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  max-width: 220px;
+  max-height: 140px;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out;
+  z-index: 100;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* Hoverda görünür */
+.like-count-wrapper:hover .like-user-list {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Beğenen her kullanıcı satırı */
+.like-user-item {
+  padding: 2px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.like-user-item:last-child {
+  border-bottom: none;
+}
+
+/* Diğer butonlar */
 .delete-btn {
   background: none;
   border: none;
@@ -143,7 +184,7 @@
   margin: 0;
   line-height: 1.4;
   color: #333;
-  max-height: 3.5em; /* yaklaşık 2 satır sınırı */
+  max-height: 3.5em;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -151,7 +192,7 @@
 .post-image {
   width: 100%;
   border-radius: 8px;
-  object-fit: cover; /* contain yerine cover ile dolgun görünür */
+  object-fit: cover;
   margin-top: 10px;
   background: #f5f5f5;
 }
@@ -250,7 +291,7 @@
   font-style: italic;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .feed-container {
     padding: 10px;
@@ -258,11 +299,11 @@
   }
 
   .post-card {
-    max-height: none; /* mobilde yükseklik sınırı kalkar */
+    max-height: none;
   }
 
   .post-image {
-    max-height: 180px; /* mobilde görsel biraz daha büyük */
+    max-height: 180px;
   }
 
   .comments-section {
