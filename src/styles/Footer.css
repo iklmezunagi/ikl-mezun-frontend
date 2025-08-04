@@ -1,0 +1,140 @@
+/* Footer.css */
+
+
+
+.footer {
+  background-color: #f4f8fb;
+  color: #1e293b;
+  padding: 24px 40px 16px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  border-top: 1px solid #d1d5db;
+  margin-top: 0;
+}
+
+
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.footer-section {
+  flex: 1 1 250px;
+  min-width: 220px;
+}
+
+.footer-logo {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+.footer-link {
+  display: block;
+  margin: 4px 0;
+  color: #2563eb;
+  text-decoration: none;
+    background-color: #e8f0fe;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  max-width: max-content;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+.footer-text {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.footer-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1e3a8a;
+}
+
+/* Developer Card */
+.dev-card {
+  background-color: #e0ecff;
+  padding: 10px;
+  border-radius: 6px;
+  color: #1e3a8a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dev-email {
+  font-size: 13px;
+  color: #1e40af;
+  text-decoration: none;
+}
+
+.dev-email i {
+  margin-right: 5px;
+}
+
+.portfolio-link {
+  font-size: 14px;
+  color: #2563eb;
+}
+
+/* Admin Grid */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.admin-card {
+  background-color: #e8f0fe;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.admin-email {
+  font-size: 12px;
+  color: #1d4ed8;
+  text-decoration: none;
+  display: block;
+  margin-top: 4px;
+}
+
+.admin-email i {
+  margin-right: 5px;
+}
+
+.footer-bottom {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-section {
+    width: 100%;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}

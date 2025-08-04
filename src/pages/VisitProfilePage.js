@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
+import Footer from '../components/Footer';
 
 import { getStudentProfileById, getStudentProfileByUsername } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';

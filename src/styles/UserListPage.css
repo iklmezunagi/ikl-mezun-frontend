@@ -1,4 +1,15 @@
 /* UserListPage.css */
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-content {
+  flex: 1; /* footer hariç alanı kapla */
+}
+
 .user-list-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -140,6 +151,7 @@
   cursor: default;
   pointer-events: none;
 }
+
 
 
 /* Responsive styles */

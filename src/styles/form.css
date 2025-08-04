@@ -13,7 +13,7 @@
 .form-container {
   max-width: 520px;
   margin: 50px auto 60px;
-  padding: 30px 25px;
+  padding: 55px 25px;
   background: var(--text-color-light); /* Beyazımsı, navbarın açık arka planıyla uyumlu */
   border: 1.5px solid var(--border-light);
   border-radius: 8px;
@@ -114,7 +114,6 @@
 /* Links */
 .login-link,
 .register-link {
-  margin-top: 24px;
   font-size: 14px;
   color: var(--deep-blue);
   user-select: text;

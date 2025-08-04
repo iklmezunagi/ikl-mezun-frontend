@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import '../styles/form.css';
 import '../styles/LoginPage.css';
+import Footer from '../components/Footer';
 
 
 function LoginPage() {
@@ -77,11 +78,13 @@ const handleSubmit = async (e) => {
 
           {errorMessage && <p className="error-message">{errorMessage}</p>}
           {successMessage && <p className="success-message">{successMessage}</p>}
-        </form>
-        <p className="register-link">
+            <p className="register-link">
           Henüz hesabınız yok mu? <Link to="/register">Kayıt Ol</Link>
         </p>
+        </form>
+      
       </div>
+           <Footer />     
     </>
   );
 }

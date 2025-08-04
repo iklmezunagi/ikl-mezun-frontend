@@ -6,6 +6,7 @@ import Feed from '../components/Feed';
 import { getStudentProfileByUsername, editProfile } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
 import '../styles/ProfilePage.css';
+import Footer from '../components/Footer';
 
 function ProfilePage() {
   // Anahtarları küçük harfli tutmak daha sağlıklı olur

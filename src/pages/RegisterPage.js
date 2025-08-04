@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import '../styles/form.css';
 import '../styles/RegisterPage.css';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -285,6 +286,7 @@ function RegisterPage() {
         </p>
       </form>
     </div>
+         <Footer />     
        </>
   );
 }

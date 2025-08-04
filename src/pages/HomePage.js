@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
+import Footer from '../components/Footer';
+
 import CreatePostModal from '../components/CreatePostModal';
 import { getStudentProfileById } from '../services/StudentService';  
 import { getAllPostsPaged, createPost, getAllAnnouncements } from '../services/PostService';
@@ -285,14 +287,16 @@ const studentId = localStorage.getItem('studentId');
             </div>
           </div>
         </div>
+         
       </div>
-
+         <Footer />        
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onPostCreated={handlePostCreated}
       />
     </div>
+   
   );
 }
 

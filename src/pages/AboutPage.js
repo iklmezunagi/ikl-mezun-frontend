@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
 import '../styles/AboutPage.css';
 import iklImage from '../assets/ikl.png';
 
@@ -64,6 +66,7 @@ function AboutPage() {
           </div>
         </div>
       </div>
+        <Footer />
     </>
   );
 }

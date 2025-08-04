@@ -8,6 +8,7 @@ import {
 import Navbar from '../components/Navbar';
 import '../styles/UserListPage.css';
 import defaultProfile from '../assets/default-profile.png';
+import Footer from '../components/Footer';
 
 function UserListPage() {
   const location = useLocation();
@@ -123,6 +124,8 @@ function UserListPage() {
   return (
     <>
       <Navbar />
+      <div className="page-wrapper">
+      <main className="page-content">
       <div className="user-list-container">
         <h2>Mezunlar</h2>
 
@@ -165,7 +168,11 @@ function UserListPage() {
             <Pagination />
           </>
         )}
-      </div>
+          
+         </div>
+      </main>
+      <Footer />
+    </div>  
     </>
   );
 }
