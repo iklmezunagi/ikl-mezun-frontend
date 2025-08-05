@@ -1,5 +1,6 @@
 // src/services/AdminService.js
-const API_BASE_URL = 'http://localhost:5142/api';
+// const API_BASE_URL = 'http://localhost:5142/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const token = localStorage.getItem('token');
 
 const headers = {
