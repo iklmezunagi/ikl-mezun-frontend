@@ -1,3 +1,5 @@
+// AdminPanelPage.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -22,18 +24,17 @@ function AdminPanelPage() {
   const [username, setUsername] = useState('');
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementContent, setAnnouncementContent] = useState('');
+  const [announcementLink, setAnnouncementLink] = useState('');
   const [announcements, setAnnouncements] = useState([]);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [userSearch, setUserSearch] = useState('');
 
-  // Token kontrolü
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) navigate('/');
   }, []);
 
-  // Duyuruları getir
   const fetchAnnouncements = async () => {
     try {
       const res = await getAllAnnouncements();
@@ -43,7 +44,6 @@ function AdminPanelPage() {
     }
   };
 
-  // Kullanıcıları getir (arama varsa ona göre)
   const fetchUsers = async () => {
     try {
       const res = userSearch
@@ -60,7 +60,6 @@ function AdminPanelPage() {
     fetchUsers();
   }, [page]);
 
-  // Admin işlemleri
   const handleGiveAdmin = async () => {
     try {
       await giveAdmin(username);
@@ -79,13 +78,18 @@ function AdminPanelPage() {
     }
   };
 
-  // Duyuru işlemleri
   const handleCreateAnnouncement = async () => {
     try {
-      await createAnnouncement(announcementTitle, announcementContent);
+      let fullContent = announcementContent;
+      if (announcementLink.trim()) {
+        fullContent += `\nlink:${announcementLink.trim()}`;
+      }
+
+      await createAnnouncement(announcementTitle, fullContent);
       alert('Duyuru oluşturuldu.');
       setAnnouncementTitle('');
       setAnnouncementContent('');
+      setAnnouncementLink('');
       fetchAnnouncements();
     } catch (err) {
       alert(err.message);
@@ -102,7 +106,6 @@ function AdminPanelPage() {
     }
   };
 
-  // Kullanıcı silme
   const handleDeleteUser = async (id) => {
     if (!window.confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
     try {
@@ -114,7 +117,6 @@ function AdminPanelPage() {
     }
   };
 
-  // Arama
   const handleSearch = () => {
     setPage(1);
     fetchUsers();
@@ -126,7 +128,6 @@ function AdminPanelPage() {
       <div className="admin-panel-container">
         <h1>Admin Paneli</h1>
 
-        {/* Admin Yetkisi Ver/Kaldır */}
         <div className="admin-section">
           <h3>Kullanıcıya Admin Yetkisi Ver/Kaldır</h3>
           <input
@@ -139,7 +140,6 @@ function AdminPanelPage() {
           <button onClick={handleRevokeAdmin}>Adminliği Kaldır</button>
         </div>
 
-        {/* Duyuru Oluştur */}
         <div className="admin-section">
           <h3>Yeni Duyuru Oluştur</h3>
           <input
@@ -154,10 +154,15 @@ function AdminPanelPage() {
             onChange={(e) => setAnnouncementContent(e.target.value)}
             rows={4}
           />
+          <input
+            type="text"
+            placeholder="İsteğe bağlı link (https://...)"
+            value={announcementLink}
+            onChange={(e) => setAnnouncementLink(e.target.value)}
+          />
           <button onClick={handleCreateAnnouncement}>Duyuru Yayınla</button>
         </div>
 
-        {/* Duyurular Listesi */}
         <div className="admin-section">
           <h3>Duyurular</h3>
           {announcements.length === 0 ? (
@@ -180,10 +185,8 @@ function AdminPanelPage() {
           )}
         </div>
 
-        {/* Kullanıcılar Listesi */}
         <div className="admin-section">
           <h3>Kullanıcıları Yönet</h3>
-
           <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
             <input
               type="text"

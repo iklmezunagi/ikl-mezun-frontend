@@ -12,6 +12,15 @@ import '../styles/Homepage.css';
 import defaultProfile from '../assets/default-profile.png';
 import '../styles/AnnouncementSlider.css';
 
+function parseAnnouncementContent(content) {
+  const linkPrefix = 'link:';
+  const lines = content.split('\n');
+  const linkLine = lines.find(line => line.startsWith(linkPrefix));
+  const link = linkLine ? linkLine.slice(linkPrefix.length).trim() : null;
+  const text = lines.filter(line => !line.startsWith(linkPrefix)).join('\n');
+  return { text, link };
+}
+
 function HomePage() {
   const navigate = useNavigate();
 
@@ -33,6 +42,7 @@ function HomePage() {
   const [annIndex, setAnnIndex] = useState(0);
 
 const studentId = localStorage.getItem('studentId'); 
+
 
   // Kullanıcı profilini ID ile çek
   useEffect(() => {
@@ -214,36 +224,52 @@ const studentId = localStorage.getItem('studentId');
         <div className="announcement-slider-wrapper">
           <h3>Duyurular</h3>
           {announcements.length === 0 ? (
-            <p>Henüz duyuru yok.</p>
-          ) : (
-            <>
-              <div className="announcement-slider">
-                <div className="announcement-card" style={{ flex: '1 1 100%' }}>
-                  <h4>{announcements[annIndex].title}</h4>
-                  <p>
-                    {announcements[annIndex].content.length > 100
-                      ? announcements[annIndex].content.slice(0, 100) + '...'
-                      : announcements[annIndex].content}
-                  </p>
-                  <div className="announcement-meta">
-                    {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
-                  </div>
-                </div>
-              </div>
+  <p>Henüz duyuru yok.</p>
+) : (
+  <>
+    <div className="announcement-slider">
+        <div className="announcement-card" style={{ flex: '1 1 100%' }}>
+          <h4>{announcements[annIndex].title}</h4>
+          <p>
+            {
+              parseAnnouncementContent(announcements[annIndex].content).text.length > 100
+                ? parseAnnouncementContent(announcements[annIndex].content).text.slice(0, 100) + '...'
+                : parseAnnouncementContent(announcements[annIndex].content).text
+            }
+          </p>
 
-              {/* Sadece 2 veya daha fazla duyuru varsa göster */}
-              {announcements.length >= 2 && (
-                <div className="slider-buttons">
-                  <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
-                    &lt; Önceki
-                  </button>
-                  <button onClick={() => setAnnIndex((prev) => (prev + 1) % announcements.length)}>
-                    Sonraki &gt;
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+          {
+            parseAnnouncementContent(announcements[annIndex].content).link && (
+              <a
+                href={parseAnnouncementContent(announcements[annIndex].content).link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="announcement-link"
+              >
+                Bağlantıyı Görüntüle
+              </a>
+            )
+          }
+
+          <div className="announcement-meta">
+            {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
+          </div>
+        </div>
+      </div>
+
+      {announcements.length >= 2 && (
+        <div className="slider-buttons">
+          <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
+            &lt; Önceki
+          </button>
+          <button onClick={() => setAnnIndex((prev) => (prev + 1) % announcements.length)}>
+            Sonraki &gt;
+          </button>
+        </div>
+      )}
+    </>
+  )}
+
         </div>
 
         {loadingPosts ? (

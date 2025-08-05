@@ -183,6 +183,117 @@
   font-size: 24px;
 }
 
+.announcement-slider-wrapper {
+  background: white;
+  padding: 25px 30px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+  margin-bottom: 30px;
+}
+
+.announcement-slider-wrapper h3 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #003c8f;
+  border-bottom: 2px solid #4a76a8;
+  padding-bottom: 6px;
+}
+
+.announcement-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.announcement-card {
+  background: #f9fbff;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Başlığa alt border ve padding */
+.announcement-card h4 {
+  margin: 0 0 10px;
+  color: #1e40af;
+  font-weight: 700;
+  font-size: 20px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #4a76a8; /* ince alt çizgi */
+}
+
+.announcement-link {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: #1e40af;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.announcement-link:hover {
+  color: #003c8f;
+  border-color: #003c8f;
+  text-decoration: none;
+}
+
+.announcement-card p {
+  margin: 0 0 14px;
+  color: #374151;
+  font-size: 15px;
+  white-space: pre-wrap; /* Satır sonlarını korur */
+  line-height: 1.5;
+}
+
+
+.announcement-meta {
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;
+  border-top: 1px solid #d1d5db;
+  padding-top: 8px;
+  user-select: none;
+}
+
+/* İnce çizgi, gradientli */
+.announcement-divider {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, #4a76a8, #90caf9, #4a76a8);
+  border-radius: 2px;
+}
+
+/* Slider butonları */
+.slider-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.slider-buttons button {
+  background-color: #4a76a8;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.slider-buttons button:hover {
+  background-color: #3a5f8a;
+}
+
 /* Responsive styles */
 @media (max-width: 1200px) {
   .home-container {
