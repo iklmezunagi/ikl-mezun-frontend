@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
-
-
 import { getStudentProfileById, getStudentProfileByUsername } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
-
-import Feed from '../components/Feed'; 
+import Feed from '../components/Feed';
+import defaultProfile from '../assets/default-profile.png';
 import '../styles/VisitProfile.css';
 
 function VisitProfilePage() {
-  const { studentId, username } = useParams(); // Get both possible parameters
+  const { studentId, username } = useParams();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -19,13 +16,12 @@ function VisitProfilePage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch profile based on either ID or username
   useEffect(() => {
     if (!studentId && !username) return;
 
     setLoadingProfile(true);
-    
-    const fetchProfile = username 
+
+    const fetchProfile = username
       ? getStudentProfileByUsername(username)
       : getStudentProfileById(studentId);
 
@@ -46,15 +42,11 @@ function VisitProfilePage() {
       .finally(() => setLoadingProfile(false));
   }, [studentId, username]);
 
-    useEffect(() => {
-      var token = localStorage.getItem('token')
-      if (token === null) {
-        navigate('/')
-      }
-  
-  }, [])
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) navigate('/');
+  }, []);
 
-  // Fetch posts when profile is loaded
   useEffect(() => {
     if (!profile || !profile.studentId) return;
 
@@ -82,43 +74,62 @@ function VisitProfilePage() {
 
   const currentUserId = localStorage.getItem('studentId');
 
-  if (loadingProfile) return <p>Profil yükleniyor...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!profile) return <p>Profil bulunamadı.</p>;
+  const formatBio = (bio) => {
+    if (!bio) return null;
+    const splitLines = bio.split(/(?<=[*.\-])\s+/);
+    return splitLines.map((line, index) => <p key={index}>{line.trim()}</p>);
+  };
+
+  if (loadingProfile) return <p className="loading">Profil yükleniyor...</p>;
+  if (error) return <p className="error">{error}</p>;
+  if (!profile) return <p className="error">Profil bulunamadı.</p>;
 
   return (
     <>
       <Navbar />
       <div className="visit-profile-container">
-        <section className="profile-info">
-          <h2>{profile.firstName} {profile.lastName}</h2>
-          <p><strong>Meslek:</strong> {profile.profession}</p>
-          <p><strong>Şehir:</strong> {profile.city}</p>
-          <p><strong>Biyografi:</strong> {profile.bio}</p>
-          <p><strong>Okul Durumu:</strong> {profile.highSchoolStatus}</p>
-          <p><strong>Üniversite:</strong> {profile.universityName}</p>
-          
-          {profile.highSchoolStatus.toLowerCase() === 'mezun' ? (
-            <p><strong>Lise:</strong> {profile.highSchoolStartYear} - {profile.highSchoolFinishYear} yılları arasında İzmir Kız Lisesi'nde okudu.</p>
-          ) : (
-            <p><strong>Lise:</strong> {profile.highSchoolStartYear} yılından beri İzmir Kız Lisesi öğrencisi.</p>
-          )}
+        <div className="profile-card">
+          <div className="profile-photo-wrapper">
+            <img
+              src={profile.profilePhotoUrl || defaultProfile}
+              alt={`${profile.firstName} ${profile.lastName}`}
+              className="profile-photo"
+            />
+          </div>
 
-          <p><strong>Email:</strong> {profile.email}</p>
-        </section>
+          <h2 className="profile-name">{profile.firstName} {profile.lastName}</h2>
 
-        <section className="posts-section">
+          <div className="profile-info-grid">
+            <div className="profile-info-item"><strong>Meslek:</strong> {profile.profession || 'Belirtilmemiş'}</div>
+            <div className="profile-info-item"><strong>Şehir:</strong> {profile.city || 'Belirtilmemiş'}</div>
+            <div className="profile-info-item"><strong>Email:</strong> {profile.email || '-'}</div>
+
+            <div className="profile-info-item"><strong>Lise Durumu:</strong> {profile.highSchoolStatus || '-'}</div>
+            <div className="profile-info-item"><strong>Üniversite:</strong> {profile.universityName || '-'}</div>
+            <div className="profile-info-item">
+              <strong>Lise:</strong>{' '}
+              {profile.highSchoolStatus?.toLowerCase() === 'mezun'
+                ? `${profile.highSchoolStartYear} - ${profile.highSchoolFinishYear} yılları arasında İzmir Kız Lisesi'nde okudu.`
+                : `${profile.highSchoolStartYear} yılından beri İzmir Kız Lisesi öğrencisi.`}
+            </div>
+          </div>
+
+          <div className="bio-section">
+            <h3>Biyografi</h3>
+            <div className="bio">{formatBio(profile.bio)}</div>
+          </div>
+        </div>
+
+        <div className="posts-section">
           <h3>Gönderiler</h3>
-
-          {loadingPosts && <p>Gönderiler yükleniyor...</p>}
+          {loadingPosts && <p className="loading">Gönderiler yükleniyor...</p>}
           {!loadingPosts && posts.length === 0 && <p>Gönderi bulunamadı.</p>}
-
           <Feed
             posts={posts}
             currentUser={{ studentId: currentUserId }}
             onUpdate={refreshPosts}
           />
-        </section>
+        </div>
       </div>
     </>
   );

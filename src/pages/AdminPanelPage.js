@@ -214,7 +214,18 @@ function AdminPanelPage() {
                 {users.map((user) => (
                   <tr key={user.id}>
                     <td>{user.firstName} {user.lastName}</td>
-                    <td>{user.username}</td>
+                    <td>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {user.username}
+                      {user.isAdmin && (
+                        <span className="admin-badge" title="Admin">
+                          <span className="admin-badge-dot"></span>
+                          Admin
+                        </span>
+                      )}
+                    </span>
+                  </td>
+
                     <td>{user.city || '-'}</td>
                     <td>{user.profession || '-'}</td>
                     <td>

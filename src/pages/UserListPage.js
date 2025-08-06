@@ -18,22 +18,27 @@ function UserListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const pageSize = 10; // backend ile uyumlu
+  const pageSize = 10;
 
-  // URL parametrelerini parse etme
   const getQueryParam = (param) => {
     const searchParams = new URLSearchParams(location.search);
     return searchParams.get(param);
   };
 
-  // Kullanıcıları yükleme fonksiyonu (arama, filtre, paging)
+  // 👇 Kullanıcıları normalize eden yardımcı fonksiyon
+  const normalizeUserList = (users) => {
+    return users.map((user) => ({
+      ...user,
+      studentId: user.studentId || user.id,  // studentId yoksa id'yi kullan
+    }));
+  };
+
   const loadUsers = async (page = 1) => {
     setLoading(true);
     setError('');
-    
+
     try {
       const searchTerm = getQueryParam('search');
       const university = getQueryParam('university');
@@ -48,13 +53,14 @@ function UserListPage() {
       } else if (profession) {
         response = await filterStudentsByProfession(profession, page);
       } else {
-        navigate('/'); // Eğer hiçbir filtre yoksa ana sayfaya yönlendir
+        navigate('/');
         return;
       }
 
       if (response.isSuccess) {
-        setUsers(response.data);
-        setTotalResults(response.data.length > 0 ? response.data[0].totalResult : 0);
+        const normalizedUsers = normalizeUserList(response.data);
+        setUsers(normalizedUsers);
+        setTotalResults(normalizedUsers.length > 0 ? normalizedUsers[0].totalResult : 0);
         setCurrentPage(page);
       } else {
         setError(response.failMessage || 'Kullanıcılar yüklenemedi.');
@@ -66,21 +72,16 @@ function UserListPage() {
     }
   };
 
-  // Sayfa numarası değiştiğinde kullanıcıları tekrar yükle
   useEffect(() => {
     loadUsers(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
-  // Sayfa değiştirici fonksiyonlar
   const goToPage = (pageNum) => {
     if (pageNum < 1 || pageNum > Math.ceil(totalResults / pageSize)) return;
     setCurrentPage(pageNum);
 
-    // URL query paramını güncelle (paging parametrelerini)
     const searchParams = new URLSearchParams(location.search);
-
-    // page parametresi ekle/güncelle
     searchParams.set('page', pageNum);
 
     navigate({
@@ -89,7 +90,6 @@ function UserListPage() {
     });
   };
 
-  // Pagination component (basit)
   const Pagination = () => {
     const totalPages = Math.ceil(totalResults / pageSize);
     if (totalPages <= 1) return null;
@@ -116,7 +116,6 @@ function UserListPage() {
     );
   };
 
-  // Kullanıcı kartına tıklayınca profil sayfasına ID ile git
   const handleUserClick = (userId) => {
     navigate(`/visit-profile-id/${userId}`);
   };
@@ -125,54 +124,53 @@ function UserListPage() {
     <>
       <Navbar />
       <div className="page-wrapper">
-      <main className="page-content">
-      <div className="user-list-container">
-        <h2>Mezunlar</h2>
+        <main className="page-content">
+          <div className="user-list-container">
+            <h2>Mezunlar</h2>
 
-        {error && <p className="error">{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-        {loading ? (
-          <div className="loading-spinner">
-            <i className="fas fa-spinner fa-spin"></i> Yükleniyor...
+            {loading ? (
+              <div className="loading-spinner">
+                <i className="fas fa-spinner fa-spin"></i> Yükleniyor...
+              </div>
+            ) : (
+              <>
+                <div className="user-cards">
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <div 
+                        key={user.studentId} 
+                        className="user-card"
+                        onClick={() => handleUserClick(user.studentId)}
+                      >
+                        <div className="user-avatar">
+                          <img 
+                            src={user.profilePhotoUrl || defaultProfile} 
+                            alt={`${user.firstName} ${user.lastName}`}
+                          />
+                        </div>
+                        <div className="user-info">
+                          <h3>{user.firstName} {user.lastName}</h3>
+                          <p><i className="fas fa-briefcase"></i> {user.profession || 'Belirtilmemiş'}</p>
+                          <p><i className="fas fa-university"></i> {user.universityName || 'Belirtilmemiş'}</p>
+                          <p><i className="fas fa-map-marker-alt"></i> {user.city || 'Belirtilmemiş'}</p>
+                          <p className="user-bio">{user.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-users">Kullanıcı bulunamadı.</p>
+                  )}
+                </div>
+
+                <Pagination />
+              </>
+            )}
           </div>
-        ) : (
-          <>
-            <div className="user-cards">
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <div 
-                    key={user.studentId} 
-                    className="user-card"
-                    onClick={() => handleUserClick(user.studentId)}
-                  >
-                    <div className="user-avatar">
-                      <img 
-                        src={user.profileImage || defaultProfile} 
-                        alt={`${user.firstName} ${user.lastName}`}
-                      />
-                    </div>
-                    <div className="user-info">
-                      <h3>{user.firstName} {user.lastName}</h3>
-                      <p><i className="fas fa-briefcase"></i> {user.profession || 'Belirtilmemiş'}</p>
-                      <p><i className="fas fa-university"></i> {user.universityName || 'Belirtilmemiş'}</p>
-                      <p><i className="fas fa-map-marker-alt"></i> {user.city || 'Belirtilmemiş'}</p>
-                      <p className="user-bio">{user.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="no-users">Kullanıcı bulunamadı.</p>
-              )}
-            </div>
-
-            <Pagination />
-          </>
-        )}
-          
-         </div>
-      </main>
-      <Footer />
-    </div>  
+        </main>
+        <Footer />
+      </div>
     </>
   );
 }

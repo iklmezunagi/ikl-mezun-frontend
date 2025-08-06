@@ -8,12 +8,9 @@ import { getPostsByUserId } from '../services/PostService';
 import '../styles/ProfilePage.css';
 
 function ProfilePage() {
-  // Anahtarları küçük harfli tutmak daha sağlıklı olur
   const username = localStorage.getItem('username');
-  const userId = localStorage.getItem('studentId'); // burada küçük harf kullandım
-
+  const userId = localStorage.getItem('studentId');
   const navigate = useNavigate();
-  
 
   const currentUser = userId ? { studentId: userId } : null;
 
@@ -43,12 +40,11 @@ function ProfilePage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-      var token = localStorage.getItem('token')
-      if (token === null) {
-        navigate('/')
-      }
-  
-  }, [])
+    var token = localStorage.getItem('token');
+    if (token === null) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (!username) return;
@@ -75,23 +71,17 @@ function ProfilePage() {
     }).catch(err => setError(err.message));
   }, [username]);
 
-
   useEffect(() => {
-  if (!userId) return;
+    if (!userId) return;
 
-  setLoadingPosts(true);
-  getPostsByUserId(userId, page)
-    .then(res => {
-      console.log('ProfilePage posts:', res);
-      res.forEach(post => {
-        console.log(`PostId: ${post.postId}, isLiked: ${post.isLiked}`);
-      });
-      setPosts(res);
-    })
-    .catch(err => console.error('Gönderiler alınamadı:', err))
-    .finally(() => setLoadingPosts(false));
-}, [userId, page]);
-
+    setLoadingPosts(true);
+    getPostsByUserId(userId, page)
+      .then(res => {
+        setPosts(res);
+      })
+      .catch(err => console.error('Gönderiler alınamadı:', err))
+      .finally(() => setLoadingPosts(false));
+  }, [userId, page]);
 
   useEffect(() => {
     fetch('/data/meslekler.json')
@@ -156,9 +146,9 @@ function ProfilePage() {
         <div className="profile-left">
           <h2>Profil Bilgilerim</h2>
 
-            <div className="readonly-field">
-          <label>Kullanıcı Adı</label>
-          <input type="text" value={username || ''} readOnly />
+          <div className="readonly-field">
+            <label>Kullanıcı Adı</label>
+            <input type="text" value={username || ''} readOnly />
           </div>
 
           <ProfileField label="İsim" value={formData.firstName} onChange={val => onFieldChange('firstName', val)} />
@@ -166,12 +156,12 @@ function ProfilePage() {
           <ProfileField label="Email" value={formData.email} onChange={val => onFieldChange('email', val)} />
 
           <ProfileField
-          label="Lise Durumu"
-          value={formData.highSchoolStatus}
-          onChange={val => onFieldChange('highSchoolStatus', val)}
-          type="radio"
-          options={['Mezun', 'Öğrenci']}
-        />
+            label="Lise Durumu"
+            value={formData.highSchoolStatus}
+            onChange={val => onFieldChange('highSchoolStatus', val)}
+            type="radio"
+            options={['Mezun', 'Öğrenci']}
+          />
 
           <ProfileField
             label="Lise Mezuniyet Yılı"
@@ -183,6 +173,7 @@ function ProfilePage() {
             label="Hakkımda"
             value={formData.bio}
             type="textarea"
+            placeholder={"Örnek:\n- Yazılım geliştirici\n- Kitap okumayı severim\n- Seyahat etmeyi severim"}
             onChange={val => onFieldChange('bio', val)}
           />
           <ProfileField
