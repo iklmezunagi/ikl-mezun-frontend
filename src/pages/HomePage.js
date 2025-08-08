@@ -33,48 +33,47 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [universities, setUniversities] = useState([]);
   const [professions, setProfessions] = useState([]);
+  const [cities, setCities] = useState([]);
+
   const [filterOptions, setFilterOptions] = useState({
     university: '',
     profession: '',
+    city: '',
   });
 
   const [announcements, setAnnouncements] = useState([]);
   const [annIndex, setAnnIndex] = useState(0);
 
-const studentId = localStorage.getItem('studentId'); 
+  const studentId = localStorage.getItem('studentId'); 
 
+  // Check authentication on initial load
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
-  // Kullanıcı profilini ID ile çek
+  // Fetch user profile by ID
   useEffect(() => {
     if (!studentId) return;
 
     getStudentProfileById(studentId)
       .then(res => {
-        console.log('API response for user profile:', res); // Kontrol için log
-        console.log('LocalStorage studentId:', localStorage.getItem('studentId'));
-
         if (res.isSuccess && res.data) {
-          setCurrentUser(res.data); // data içindeki kullanıcı objesi
+          setCurrentUser(res.data);
         } else {
           setCurrentUser(null);
-          console.error('Profil bilgisi alınamadı:', res.failMessage);
+          console.error('Profile info could not be fetched:', res.failMessage);
         }
       })
       .catch(err => {
         setCurrentUser(null);
-        console.error('Profil çağrısı hatası:', err.message);
+        console.error('Profile call error:', err.message);
       });
   }, [studentId]);
 
-  useEffect(() => {
-    var token = localStorage.getItem('token')
-    if (token === null) {
-      navigate('/')
-    }
-
-  }, [])
-
-  // Gönderileri getir (sayfalı)
+  // Fetch posts (paginated)
   useEffect(() => {
     const fetchPosts = async () => {
       setLoadingPosts(true);
@@ -82,7 +81,7 @@ const studentId = localStorage.getItem('studentId');
         const data = await getAllPostsPaged(page);
         setPosts(data.data || data);
       } catch (err) {
-        console.error('Gönderiler alınamadı:', err);
+        console.error('Posts could not be fetched:', err);
       } finally {
         setLoadingPosts(false);
       }
@@ -91,23 +90,34 @@ const studentId = localStorage.getItem('studentId');
     fetchPosts();
   }, [page]);
 
-  // Meslekleri yükle
+  // Load professions
   useEffect(() => {
     fetch('/data/meslekler.json')
       .then(res => res.json())
       .then(data => setProfessions(data))
-      .catch(err => console.error('Meslekler yüklenemedi:', err));
+      .catch(err => console.error('Professions could not be loaded:', err));
   }, []);
 
-  // Üniversiteleri yükle
+  // Load universities
   useEffect(() => {
     fetch('/data/uni.json')
       .then(res => res.json())
       .then(data => setUniversities(data))
-      .catch(err => console.error('Üniversiteler yüklenemedi:', err));
+      .catch(err => console.error('Universities could not be loaded:', err));
   }, []);
 
-  // Arama butonuna basınca sayfa 1 ile arama yapacak
+  // Load cities
+  useEffect(() => {
+    fetch('https://turkiyeapi.dev/api/v1/provinces')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'OK' && Array.isArray(data.data)) {
+          setCities(data.data.map(city => city.name));
+        }
+      })
+      .catch(err => console.error('City API error:', err));
+  }, []);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -115,7 +125,6 @@ const studentId = localStorage.getItem('studentId');
     }
   };
 
-  // Üniversite filtresi değişince sayfa 1 ile git
   const handleUniversityFilter = (uni) => {
     setFilterOptions(prev => ({ ...prev, university: uni }));
     if (uni) {
@@ -125,7 +134,6 @@ const studentId = localStorage.getItem('studentId');
     }
   };
 
-  // Meslek filtresi değişince sayfa 1 ile git
   const handleProfessionFilter = (prof) => {
     setFilterOptions(prev => ({ ...prev, profession: prof }));
     if (prof) {
@@ -135,19 +143,29 @@ const studentId = localStorage.getItem('studentId');
     }
   };
 
-  // Yeni gönderi oluşturulunca çağrılır (modal'dan)
-  const handlePostCreated = async (content) => {
-    try {
-      await createPost(content);
-      setPage(1);
-      const data = await getAllPostsPaged(1);
-      setPosts(data.data || data);
-    } catch (err) {
-      alert('Gönderi oluşturulamadı: ' + err.message);
+  const handleCityFilter = (city) => {
+    setFilterOptions(prev => ({ ...prev, city }));
+    if (city) {
+      navigate(`/userList?city=${encodeURIComponent(city)}&page=1`);
+    } else {
+      navigate('/userList');
     }
   };
 
-  // Duyuruları getir
+const handlePostCreated = async (content) => {
+  try {
+    const newPost = await createPost(content);
+    // Yeni postu anında local state'e ekle
+    setPosts(prev => [newPost.data || newPost, ...prev]);
+    setIsModalOpen(false);
+    // Backend'e ekledikten sonra sayfayı yenile
+    window.location.reload();
+  } catch (err) {
+    alert('Gönderi oluşturulamadı: ' + err.message);
+  }
+};
+
+  // Fetch announcements
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
@@ -158,7 +176,7 @@ const studentId = localStorage.getItem('studentId');
           setAnnouncements([]);
         }
       } catch (err) {
-        console.error('Duyurular alınamadı:', err);
+        console.error('Announcements could not be fetched:', err);
         setAnnouncements([]);
       }
     };
@@ -170,7 +188,7 @@ const studentId = localStorage.getItem('studentId');
     <Navbar />
 
     <div className="home-container">
-      {/* Sol Sidebar */}
+      {/* Sol Kenar Çubuğu */}
       <div className="left-sidebar">
         {currentUser ? (
           <>
@@ -191,7 +209,7 @@ const studentId = localStorage.getItem('studentId');
                 </h3>
                 <p>{currentUser.profession || 'Belirtilmemiş'}</p>
                 <p>{currentUser.universityName || currentUser.university || 'Belirtilmemiş'}</p>
-                <p className="user-bio">{currentUser.bio || 'Merhaba! Ben bu platformun bir üyesiyim.'}</p>
+                <p className="user-bio">{currentUser.bio || 'Merhaba! Bu platformun bir üyesiyim.'}</p>
               </div>
             </div>
 
@@ -207,13 +225,13 @@ const studentId = localStorage.getItem('studentId');
         )}
       </div>
 
-      {/* Orta Ana İçerik */}
+      {/* Ana İçerik */}
       <div className="main-content">
         <div className="search-container">
           <form onSubmit={handleSearch} className="search-form">
             <input
               type="text"
-              placeholder="arama yap..."
+              placeholder="Ara..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -224,52 +242,51 @@ const studentId = localStorage.getItem('studentId');
         <div className="announcement-slider-wrapper">
           <h3>Duyurular</h3>
           {announcements.length === 0 ? (
-  <p>Henüz duyuru yok.</p>
-) : (
-  <>
-    <div className="announcement-slider">
-        <div className="announcement-card" style={{ flex: '1 1 100%' }}>
-          <h4>{announcements[annIndex].title}</h4>
-          <p>
-            {
-              parseAnnouncementContent(announcements[annIndex].content).text.length > 100
-                ? parseAnnouncementContent(announcements[annIndex].content).text.slice(0, 100) + '...'
-                : parseAnnouncementContent(announcements[annIndex].content).text
-            }
-          </p>
+            <p>Henüz duyuru yok.</p>
+          ) : (
+            <>
+              <div className="announcement-slider">
+                <div className="announcement-card" style={{ flex: '1 1 100%' }}>
+                  <h4>{announcements[annIndex].title}</h4>
+                  <p>
+                    {
+                      parseAnnouncementContent(announcements[annIndex].content).text.length > 100
+                        ? parseAnnouncementContent(announcements[annIndex].content).text.slice(0, 100) + '...'
+                        : parseAnnouncementContent(announcements[annIndex].content).text
+                    }
+                  </p>
 
-          {
-            parseAnnouncementContent(announcements[annIndex].content).link && (
-              <a
-                href={parseAnnouncementContent(announcements[annIndex].content).link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="announcement-link"
-              >
-                Bağlantıyı Görüntüle
-              </a>
-            )
-          }
+                  {
+                    parseAnnouncementContent(announcements[annIndex].content).link && (
+                      <a
+                        href={parseAnnouncementContent(announcements[annIndex].content).link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="announcement-link"
+                      >
+                        Bağlantıyı Görüntüle
+                      </a>
+                    )
+                  }
 
-          <div className="announcement-meta">
-            {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
-          </div>
-        </div>
-      </div>
+                  <div className="announcement-meta">
+                    {announcements[annIndex].createdAt} — {announcements[annIndex].createdBy}
+                  </div>
+                </div>
+              </div>
 
-      {announcements.length >= 2 && (
-        <div className="slider-buttons">
-          <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
-            &lt; Önceki
-          </button>
-          <button onClick={() => setAnnIndex((prev) => (prev + 1) % announcements.length)}>
-            Sonraki &gt;
-          </button>
-        </div>
-      )}
-    </>
-  )}
-
+              {announcements.length >= 2 && (
+                <div className="slider-buttons">
+                  <button onClick={() => setAnnIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}>
+                    &lt; Önceki
+                  </button>
+                  <button onClick={() => setAnnIndex((prev) => (prev + 1) % announcements.length)}>
+                    Sonraki &gt;
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {loadingPosts ? (
@@ -285,7 +302,7 @@ const studentId = localStorage.getItem('studentId');
         )}
       </div>
 
-      {/* Sağ Sidebar */}
+      {/* Sağ Kenar Çubuğu */}
       <div className="right-sidebar">
         <div className="filter-section">
           <h2>Mezunlarımızla Tanışın</h2>
@@ -315,6 +332,21 @@ const studentId = localStorage.getItem('studentId');
               {professions.map((prof, idx) => (
                 <option key={idx} value={prof}>
                   {prof}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <h3>Şehre Göre Filtrele</h3>
+            <select
+              value={filterOptions.city}
+              onChange={e => handleCityFilter(e.target.value)}
+            >
+              <option value="">Tüm Şehirler</option>
+              {cities.map((city, idx) => (
+                <option key={idx} value={city}>
+                  {city}
                 </option>
               ))}
             </select>

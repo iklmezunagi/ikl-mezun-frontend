@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   filterStudentsByProfession, 
   filterStudentsByUniversity,
+  filterStudentsByCity,
   searchStudents
 } from '../services/StudentService';
 import Navbar from '../components/Navbar';
@@ -22,27 +23,36 @@ function UserListPage() {
   const [totalResults, setTotalResults] = useState(0);
   const pageSize = 10;
 
+  // URL parametresi alma yardımcı fonksiyonu
   const getQueryParam = (param) => {
     const searchParams = new URLSearchParams(location.search);
     return searchParams.get(param);
   };
 
-  // 👇 Kullanıcıları normalize eden yardımcı fonksiyon
+  // Kullanıcı listesini normalize et (studentId varsa onu kullan, yoksa id)
   const normalizeUserList = (users) => {
     return users.map((user) => ({
       ...user,
-      studentId: user.studentId || user.id,  // studentId yoksa id'yi kullan
+      studentId: user.studentId || user.id,
     }));
   };
 
+  // Kullanıcıları yükleme fonksiyonu
   const loadUsers = async (page = 1) => {
     setLoading(true);
     setError('');
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       const searchTerm = getQueryParam('search');
       const university = getQueryParam('university');
       const profession = getQueryParam('profession');
+      const city = getQueryParam('city');
 
       let response;
 
@@ -52,7 +62,10 @@ function UserListPage() {
         response = await filterStudentsByUniversity(university, page);
       } else if (profession) {
         response = await filterStudentsByProfession(profession, page);
+      } else if (city) {
+        response = await filterStudentsByCity(city, page);  // Şehir filtresi eklendi
       } else {
+        // Hiç filtre yoksa anasayfaya dön veya uygun bir sayfa
         navigate('/');
         return;
       }
@@ -60,25 +73,37 @@ function UserListPage() {
       if (response.isSuccess) {
         const normalizedUsers = normalizeUserList(response.data);
         setUsers(normalizedUsers);
+        // totalResult API'den geliyor varsayımıyla:
         setTotalResults(normalizedUsers.length > 0 ? normalizedUsers[0].totalResult : 0);
         setCurrentPage(page);
       } else {
         setError(response.failMessage || 'Kullanıcılar yüklenemedi.');
       }
     } catch (err) {
-      setError(err.message || 'Bir hata oluştu.');
+      // Eğer 401 Unauthorized ise login sayfasına yönlendir
+      if (
+        err.message.toLowerCase().includes('unauthorized') ||
+        err.message.includes('401')
+      ) {
+        navigate('/login');
+      } else {
+        setError(err.message || 'Bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Sayfa veya query değişince kullanıcıları yükle
   useEffect(() => {
     loadUsers(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
+  // Sayfa değiştirme fonksiyonu
   const goToPage = (pageNum) => {
-    if (pageNum < 1 || pageNum > Math.ceil(totalResults / pageSize)) return;
+    const totalPages = Math.ceil(totalResults / pageSize);
+    if (pageNum < 1 || pageNum > totalPages) return;
     setCurrentPage(pageNum);
 
     const searchParams = new URLSearchParams(location.search);
@@ -86,10 +111,11 @@ function UserListPage() {
 
     navigate({
       pathname: location.pathname,
-      search: searchParams.toString()
+      search: searchParams.toString(),
     });
   };
 
+  // Sayfalama bileşeni
   const Pagination = () => {
     const totalPages = Math.ceil(totalResults / pageSize);
     if (totalPages <= 1) return null;
@@ -116,6 +142,7 @@ function UserListPage() {
     );
   };
 
+  // Kullanıcı kartına tıklayınca profiline git
   const handleUserClick = (userId) => {
     navigate(`/visit-profile-id/${userId}`);
   };

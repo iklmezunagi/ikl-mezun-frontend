@@ -54,6 +54,21 @@ export async function filterStudentsByProfession(professionKeyword, page) {
 }
 
 
+
+export async function filterStudentsByCity(keyword, page) {
+  const token = localStorage.getItem('token');
+  const encodedKeyword = encodeURIComponent(keyword);
+  const response = await fetch(`${API_BASE_URL}/Student/filter-by-city/paged/${encodedKeyword}?page=${page}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.failMessage || 'City filter failed');
+  }
+  return response.json();
+}
+
+
 // Kullanıcı profilini username ile getir
 export async function getStudentProfileByUsername(username) {
   const token = localStorage.getItem('token');

@@ -39,6 +39,9 @@ function ProfilePage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
+  const [showCustomUniversity, setShowCustomUniversity] = useState(false);
+
+
   useEffect(() => {
     var token = localStorage.getItem('token');
     if (token === null) {
@@ -183,13 +186,33 @@ function ProfilePage() {
             options={professions}
             onChange={val => onFieldChange('profession', val)}
           />
-          <ProfileField
+                    <ProfileField
             label="Üniversite"
             value={formData.universityName}
             type="select"
             options={universities}
-            onChange={val => onFieldChange('universityName', val)}
+            onChange={val => {
+              onFieldChange('universityName', val);
+              setShowCustomUniversity(val === 'Diğer');
+              if (val !== 'Diğer') {
+                onFieldChange('universityName', val);
+              } else {
+                onFieldChange('universityName', '');
+              }
+            }}
           />
+
+          {showCustomUniversity && (
+            <div className="custom-university-field">
+              <input
+                type="text"
+                placeholder="Üniversite adını giriniz"
+                value={formData.universityName}
+                onChange={e => onFieldChange('universityName', e.target.value)}
+              />
+            </div>
+          )}
+
           <ProfileField
             label="Şehir"
             value={formData.city}

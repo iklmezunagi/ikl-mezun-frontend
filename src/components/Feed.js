@@ -8,9 +8,16 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
   const navigate = useNavigate();
   const [commentInputs, setCommentInputs] = useState({});
   const [localPosts, setLocalPosts] = useState(posts);
+  const [commentsOpen, setCommentsOpen] = useState({}); // postId: true/false
 
   useEffect(() => {
     setLocalPosts(posts);
+    // Başta tüm postların yorumları açık olsun
+    const openStates = {};
+    posts.forEach(post => {
+      openStates[post.postId] = true;
+    });
+    setCommentsOpen(openStates);
   }, [posts]);
 
   const isMyPost = (post) => currentUser && post.studentId === currentUser.studentId;
@@ -41,11 +48,16 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm('Gönderiyi silmek istediğinize emin misiniz?')) return;
+
+    // UI'dan hemen kaldır
+    setLocalPosts(prevPosts => prevPosts.filter(p => p.postId !== postId));
+
     try {
       await deletePost(postId);
       onUpdate();
     } catch (err) {
       alert('Gönderi silinemedi: ' + err.message);
+      onUpdate();
     }
   };
 
@@ -53,29 +65,80 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
     setCommentInputs(prev => ({ ...prev, [postId]: value }));
   };
 
-  const handleAddComment = async (postId) => {
-    if (!commentInputs[postId] || commentInputs[postId].trim() === '') return;
-    try {
-      await addComment(postId, commentInputs[postId]);
-      setCommentInputs(prev => ({ ...prev, [postId]: '' }));
-      onUpdate();
-    } catch (err) {
-      alert('Yorum eklenemedi: ' + err.message);
-    }
+ const handleAddComment = async (postId) => {
+  if (!commentInputs[postId] || commentInputs[postId].trim() === '') return;
+
+  const newComment = {
+    commentId: `temp-${Date.now()}`,
+    commentContent: commentInputs[postId],
+    firstName: currentUser.firstName,
+    lastName: currentUser.lastName,
+    profileImage: currentUser.profileImage,
+    username: currentUser.username,
+    studentId: currentUser.studentId,
   };
 
-  const handleDeleteComment = async (commentId) => {
+  // UI'ı hemen güncelle
+  setLocalPosts(prevPosts =>
+    prevPosts.map(post => {
+      if (post.postId === postId) {
+        return {
+          ...post,
+          comments: [...(post.comments || []), newComment],
+          deletableComments: [...(post.deletableComments || []), newComment.commentId],
+        };
+      }
+      return post;
+    })
+  );
+
+  setCommentInputs(prev => ({ ...prev, [postId]: '' }));
+
+  try {
+    await addComment(postId, newComment.commentContent);
+    // Başarılıysa sayfayı yenile
+    window.location.reload();
+  } catch (err) {
+    alert('Yorum eklenemedi: ' + err.message);
+    window.location.reload();
+  }
+};
+
+
+  const handleDeleteComment = async (commentId, postId) => {
     if (!window.confirm('Yorumu silmek istediğinize emin misiniz?')) return;
+
+    const oldPosts = [...localPosts];
+    setLocalPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.postId === postId) {
+          return {
+            ...post,
+            comments: (post.comments || []).filter(c => c.commentId !== commentId),
+            deletableComments: (post.deletableComments || []).filter(id => id !== commentId),
+          };
+        }
+        return post;
+      })
+    );
+
     try {
       await deleteComment(commentId);
-      onUpdate();
     } catch (err) {
       alert('Yorum silinemedi: ' + err.message);
+      setLocalPosts(oldPosts);
     }
   };
 
   const handleUserClick = (username) => {
     navigate(`/visit-profile-username/${username}`);
+  };
+
+  const toggleComments = (postId) => {
+    setCommentsOpen(prev => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
   };
 
   return (
@@ -106,7 +169,6 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
                 </div>
 
                 <div className="post-actions">
-                  {/* Kalp Butonu */}
                   <button
                     className={`like-btn ${post.isLiked ? 'liked' : ''}`}
                     onClick={() => handleLike(post.postId)}
@@ -115,7 +177,6 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
                     <i className={`fas fa-heart ${post.isLiked ? 'liked-icon' : ''}`}></i>
                   </button>
 
-                  {/* Beğeni Sayısı ve Hover ile beğenenlerin isimleri */}
                   <div className="like-count-wrapper" title="Beğenenler">
                     <span className="like-count">{post.totalLikeCount}</span>
                     {post.likes && post.likes.length > 0 && (
@@ -146,53 +207,63 @@ function Feed({ posts, currentUser, page, setPage, onUpdate }) {
                 {post.imageUrl && <img src={post.imageUrl} alt="Post content" className="post-image" />}
               </div>
 
-              <div className="comments-section">
-                {post.comments?.map(comment => (
-                  <div key={comment.commentId} className="comment">
-                    <div className="comment-user-info">
-                      <img
-                        src={comment.profileImage || defaultProfile}
-                        alt={`${comment.firstName} ${comment.lastName}`}
-                        className="comment-user-avatar"
-                      />
-                      <div className="comment-content">
-                        <button
-                          className="comment-user-name-link"
-                          onClick={() => handleUserClick(comment.username)}
-                          title={`Profili ziyaret et: ${comment.firstName} ${comment.lastName}`}
-                        >
-                          {comment.firstName} {comment.lastName}
-                        </button>
-                        <p>{comment.commentContent}</p>
-                      </div>
-                    </div>
-                    {(post.deletableComments?.includes(comment.commentId) || currentUser?.studentId === comment.studentId) && (
-                      <button
-                        className="delete-comment-btn"
-                        title="Yorumu sil"
-                        onClick={() => handleDeleteComment(comment.commentId)}
-                      >
-                        <i className="fas fa-times"></i>
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <div className="add-comment">
-                  <input
-                    type="text"
-                    placeholder="Yorum ekle..."
-                    value={commentInputs[post.postId] || ''}
-                    onChange={(e) => handleCommentChange(post.postId, e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.postId)}
-                  />
-                  <button
-                    className="comment-submit-btn"
-                    onClick={() => handleAddComment(post.postId)}
-                  >
-                    <i className="fas fa-paper-plane"></i>
-                  </button>
-                </div>
+              <div
+                className="comments-toggle"
+                onClick={() => toggleComments(post.postId)}
+                style={{ cursor: 'pointer', fontWeight: 'bold', color: '#007bff', userSelect: 'none' }}
+              >
+                {commentsOpen[post.postId] ? '▲ Yorumları Kapat' : '▼ Yorumları Aç'}
               </div>
+
+              {commentsOpen[post.postId] && (
+                <div className="comments-section">
+                  {post.comments?.map(comment => (
+                    <div key={comment.commentId} className="comment">
+                      <div className="comment-user-info">
+                        <img
+                          src={comment.profileImage || defaultProfile}
+                          alt={`${comment.firstName} ${comment.lastName}`}
+                          className="comment-user-avatar"
+                        />
+                        <div className="comment-content">
+                          <button
+                            className="comment-user-name-link"
+                            onClick={() => handleUserClick(comment.username)}
+                            title={`Profili ziyaret et: ${comment.firstName} ${comment.lastName}`}
+                          >
+                            {comment.firstName} {comment.lastName}
+                          </button>
+                          <p>{comment.commentContent}</p>
+                        </div>
+                      </div>
+                      {(post.deletableComments?.includes(comment.commentId) || currentUser?.studentId === comment.studentId) && (
+                        <button
+                          className="delete-comment-btn"
+                          title="Yorumu sil"
+                          onClick={() => handleDeleteComment(comment.commentId, post.postId)}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <div className="add-comment">
+                    <input
+                      type="text"
+                      placeholder="Yorum ekle..."
+                      value={commentInputs[post.postId] || ''}
+                      onChange={(e) => handleCommentChange(post.postId, e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.postId)}
+                    />
+                    <button
+                      className="comment-submit-btn"
+                      onClick={() => handleAddComment(post.postId)}
+                    >
+                      <i className="fas fa-paper-plane"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}
