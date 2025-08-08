@@ -35,20 +35,27 @@ const handleSubmit = async (e) => {
       localStorage.setItem('isAdmin', response.data.isAdmin);
 
 
-      setSuccessMessage(response.responseMessage || 'Giriş başarılı!');
+      setSuccessMessage( 'Giriş başarılı!');
       setErrorMessage('');
       
       setTimeout(() => {
         navigate('/home'); 
       }, 1000);
     } else {
-      setErrorMessage(response.failMessage || 'Giriş başarısız');
+      setErrorMessage('Giriş başarısız');
       setSuccessMessage('');
     }
-  } catch (err) {
-    setErrorMessage(err.message);
+    } catch (err) {
+    let message = err.message || 'Giriş başarısız oldu.';
+
+    if (message.toLowerCase().includes('timeout') || message.toLowerCase().includes('expired')) {
+      message = 'Veritabanı yükleniyor, lütfen bekleyin. Bu işlem 30 saniye kadar sürebilir.';
+    }
+
+    setErrorMessage(message);
     setSuccessMessage('');
   }
+
 };
 
 

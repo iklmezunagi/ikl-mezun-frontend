@@ -103,8 +103,15 @@ function RegisterPage() {
       setSuccessMessage(response.responseMessage || 'Kayıt başarılı! Yönlendiriliyorsunuz.');
       setErrorMessage('');
 
-    } catch (err) {
-      setErrorMessage(err.message || 'Kayıt başarısız oldu.');
+   } catch (err) {
+   let message = err.message || 'Kayıt başarısız oldu.';
+
+      // Timeout / expired kontrolü
+      if (message.toLowerCase().includes('timeout') || message.toLowerCase().includes('expired')) {
+        message = 'Veritabanı yükleniyor, lütfen bekleyin. Bu işlem 30 saniye kadar sürebilir.';
+      }
+
+      setErrorMessage(message);
       setSuccessMessage('');
     }
 
@@ -121,14 +128,14 @@ function RegisterPage() {
       localStorage.setItem('isAdmin', response.data.isAdmin);
 
 
-      setSuccessMessage(response.responseMessage || 'Giriş başarılı!');
+      setSuccessMessage( 'Kayıt başarılı!');
       setErrorMessage('');
       
       setTimeout(() => {
         navigate('/home'); 
       }, 1000);
     } else {
-      setErrorMessage(response.failMessage || 'Giriş başarısız');
+      setErrorMessage( 'Kayıt başarısız');
       setSuccessMessage('');
     }
   } catch (err) {
