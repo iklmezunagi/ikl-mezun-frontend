@@ -41,6 +41,13 @@ function AboutPage() {
                 herkesin gelişmelerden haberdar olması sağlanır.
                 </p>
             </section>
+            <section>
+                <p>
+                Mezunlarımız, platform üzerinden iş hayatlarına dair paylaşımlar yapabilir ve iş hayatında birbirlerine destek olur; 
+                böylece mezunlarımız arasında iş dünyasında güçlü bir dayanışma ağı oluşturulması hedeflenir.
+                </p>
+            </section>
+
 
             <section>
                 <p>

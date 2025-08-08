@@ -11,12 +11,19 @@ function Footer() {
   };
 
   const admins = [
-    { name: 'Onur Akdeniz', email: 'akdeniz14@protonmail.com' },
     { name: 'Yiğit Tınmaz', email: 'tnmazyigit@gmail.com' },
-    { name: 'Kerem Salih Okumuş', email: 'keremsalihok@gmail.com' },
     { name: 'Can Sırrı', email: 'cansirri@icloud.com' },
+    { name: 'Kerem Salih Okumuş', email: 'keremsalihok@gmail.com' },
     { name: 'Rıfat Kaşıkçı', email: 'rifatkasikci@gmail.com ' }
   ];
+
+  const handleAdminNameClick = (adminName) => {
+    // Sadece Yiğit Tınmaz ve Can Sırrı için YouTube linkini aç
+    if (adminName === 'Yiğit Tınmaz' || adminName === 'Can Sırrı') {
+      const youtubeUrl = 'https://www.youtube.com/watch?v=79xS24WwWJU'; // Buraya istediğiniz YouTube linkini yazın
+      window.open(youtubeUrl, '_blank');
+    }
+  };
 
   return (
     <footer className="footer">
@@ -31,6 +38,14 @@ function Footer() {
             className="footer-link"
           >
             🌐 İKL Resmi Site
+          </a>
+          <a
+            href="https://www.instagram.com/iklmezunagi/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            📷 İKL Mezun Ağı Instagram
           </a>
           <p className="footer-text">Yeşiltepe, Mithatpaşa Cd. No:47 D, Konak/İzmir</p>
         </div>
@@ -58,7 +73,15 @@ function Footer() {
           <div className="admin-grid">
             {admins.map((admin, index) => (
               <div key={index} className="admin-card">
-                <span>{admin.name}</span>
+                <span 
+                  className={admin.name === 'Yiğit Tınmaz' || admin.name === 'Can Sırrı' ? 'admin-name-clickable' : ''}
+                  onClick={() => handleAdminNameClick(admin.name)}
+                  style={{ 
+                    cursor: admin.name === 'Yiğit Tınmaz' || admin.name === 'Can Sırrı' ? 'pointer' : 'default'
+                  }}
+                >
+                  {admin.name}
+                </span>
                 <a href={`mailto:${admin.email}`} className="admin-email">
                   <i className="fas fa-envelope"></i> {admin.email}
                 </a>
