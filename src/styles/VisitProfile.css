@@ -22,7 +22,7 @@
   margin: 0 auto 20px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #6c1008;
+  border: 4px solid #b83226;
   box-shadow: 0 0 10px rgba(108, 16, 8, 0.3);
 }
 
@@ -35,7 +35,7 @@
 
 .profile-name {
   font-size: 32px;
-  color: #6c1008;
+  color: #b83226;
   margin-bottom: 30px;
   font-weight: 700;
 }
@@ -66,7 +66,7 @@
 }
 
 .bio-section h3 {
-  color: #6c1008;
+  color: #b83226;
   margin-bottom: 12px;
   font-weight: 600;
 }
@@ -87,9 +87,9 @@
 
 .posts-section h3 {
   font-size: 24px;
-  color: #6c1008;
+  color: #b83226;
   margin-bottom: 20px;
-  border-bottom: 2px solid #6c1008;
+  border-bottom: 2px solid #b83226;
   padding-bottom: 8px;
 }
 

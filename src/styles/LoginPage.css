@@ -34,3 +34,17 @@
   position: relative;
   z-index: 2;
 }
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #4a76a8;
+  font-size: 18px;
+}
+
+.loading-spinner i {
+  margin-right: 10px;
+  font-size: 24px;
+}
