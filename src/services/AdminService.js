@@ -31,26 +31,34 @@ export async function revokeAdmin(username) {
 }
 
 // 3. Duyuru oluştur
-    export async function createAnnouncement(title, content) {
-    const token = localStorage.getItem('token');
+export async function createAnnouncement(title, content, photoUrl) {
+  const token = localStorage.getItem('token');
 
-    const response = await fetch(`${API_BASE_URL}/Admin/create-announcement`, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, content }), // sadece gerekli alanlar
-    });
+  const bodyObj = {
+    title: title || '',
+    content: content || '',
+  };
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.failMessage || 'Duyuru oluşturulamadı');
-    }
+  if (photoUrl) {
+    bodyObj.photoUrl = photoUrl;
+  }
 
-    return response.json();
-    }
+  const response = await fetch(`${API_BASE_URL}/Admin/create-announcement`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(bodyObj),
+  });
 
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.failMessage || 'Duyuru oluşturulamadı');
+  }
+
+  return response.json();
+}
 
 
 export async function getAllAnnouncements() {

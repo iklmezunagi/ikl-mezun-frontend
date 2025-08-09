@@ -226,6 +226,10 @@
   border-radius: 50%;
   object-fit: cover;
 }
+.comment-user-name-link {
+  font-size: 0.8rem;
+}
+
 
 .comment-content {
   flex: 1;

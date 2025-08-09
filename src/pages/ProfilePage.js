@@ -6,6 +6,8 @@ import Feed from '../components/Feed';
 import { getStudentProfileByUsername, editProfile } from '../services/StudentService';
 import { getPostsByUserId } from '../services/PostService';
 import '../styles/ProfilePage.css';
+import defaultProfile from '../assets/default-profile.png';
+import { FaPen } from 'react-icons/fa';
 
 function ProfilePage() {
   const username = localStorage.getItem('username');
@@ -24,7 +26,8 @@ function ProfilePage() {
     profession: '',
     universityName: '',
     city: '',
-    phoneNumber: ''
+    phoneNumber: '',
+    profilePhotoUrl: '' // 📌 Eklendi
   });
 
   const [universities, setUniversities] = useState([]);
@@ -42,6 +45,31 @@ function ProfilePage() {
   const [showCustomUniversity, setShowCustomUniversity] = useState(false);
   const [showCustomCity, setShowCustomCity] = useState(false);
   const [showCustomProfession, setShowCustomProfession] = useState(false);
+
+  // 🔹 Cloudinary'ye fotoğraf yükleme
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "iklmezunagi"); // Unsigned preset adı
+
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dertyg91x/image/upload",
+        { method: "POST", body: data }
+      );
+      const uploaded = await res.json();
+      if (uploaded.secure_url) {
+        setFormData(prev => ({ ...prev, profilePhotoUrl: uploaded.secure_url }));
+        setHasChanges(true);
+      } else {
+        setError("Fotoğraf yüklenemedi");
+      }
+    } catch (err) {
+      console.error("Fotoğraf yüklenemedi:", err);
+      setError("Fotoğraf yüklenemedi");
+    }
+  };
 
   useEffect(() => {
     var token = localStorage.getItem('token');
@@ -67,7 +95,8 @@ function ProfilePage() {
           profession: res.data.profession || '',
           universityName: cleanUni,
           city: res.data.city || '',
-          phoneNumber: res.data.phoneNumber || ''
+          phoneNumber: res.data.phoneNumber || '',
+          profilePhotoUrl: res.data.profilePhotoUrl || '' // 📌 Fotoğraf URL'si backend'den alınır
         });
       } else {
         setError(res.failMessage || 'Profil bilgileri alınamadı');
@@ -131,7 +160,7 @@ function ProfilePage() {
       setError('');
       setSuccessMessage('');
       const payload = {
-        Id: userId,
+        id: userId, // küçük i harfi olmalı backend bekliyorsa
         ...formData,
         highSchoolGraduateYear: Number(formData.highSchoolGraduateYear) || 0,
       };
@@ -153,6 +182,28 @@ function ProfilePage() {
       <div className="profile-page">
         <div className="profile-left">
           <h2>Profil Bilgilerim</h2>
+
+          {/* 📌 Profil Fotoğrafı Alanı */}
+          
+      <div className="photo-upload">
+        <label>Profil Fotoğrafı</label>
+        <div className="photo-container" onClick={() => document.getElementById("profilePhotoInput").click()}>
+          <img
+            src={formData.profilePhotoUrl || defaultProfile}
+            alt="Profil"
+            className="profile-photo"
+          />
+          <div className="edit-icon">
+            <FaPen />
+          </div>
+        </div>
+        <input
+          id="profilePhotoInput"
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleImageUpload(e.target.files[0])}
+        />
+      </div>
 
           <div className="readonly-field">
             <label>Kullanıcı Adı</label>

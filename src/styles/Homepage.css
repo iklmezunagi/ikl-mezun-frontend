@@ -93,38 +93,50 @@
 .create-post-btn:hover {
   background-color: #3a5f8a;
 }
-
 .search-container {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .search-form {
-  display: flex;
-  background: white;
-  border-radius: 30px;
+  display: inline-flex;
+  width: 100%;
+  max-width: 600px;
+  height: 30px;
+  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: none;
 }
 
-.search-form input {
+.search-form input[type="text"] {
   flex: 1;
-  padding: 12px 20px;
+  padding: 0 12px;
   border: none;
+  font-size: 0.9rem;
   outline: none;
-  font-size: 16px;
+  height: 100%;
+}
+
+.search-form input[type="text"]::placeholder {
+  color: #aaa;
 }
 
 .search-form button {
-  background: #4a76a8;
-  color: white;
+  background-color: #007bff;
   border: none;
-  padding: 0 20px;
+  padding: 0 15px;
+  color: white;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 0.9rem;
+  height: 100%;
+  transition: background-color 0.2s ease;
 }
 
 .search-form button:hover {
-  background: #3a5f8a;
+  background-color: #0056b3;
 }
 
 .filter-section {
@@ -252,6 +264,86 @@
   line-height: 1.5;
 }
 
+.announcement-slider {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
+  background-color: #fafafa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.announcement-card h4 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.announcement-image {
+  display: block;
+  width: 100%;
+  max-width: 450px;   /* orta boyut */
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.announcement-image:hover {
+  transform: scale(1.05);
+}
+
+.announcement-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #444;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+.announcement-link {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #007bff;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.announcement-link:hover {
+  color: #0056b3;
+}
+
+
+.announcement-controls {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.announcement-controls button {
+  background-color: #007bff;
+  border: none;
+  padding: 8px 14px;
+  margin: 0 8px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.announcement-controls button:disabled {
+  background-color: #bbb;
+  cursor: default;
+}
+
+.announcement-counter {
+  font-weight: 600;
+  font-size: 1rem;
+  vertical-align: middle;
+}
 
 .announcement-meta {
   font-size: 13px;
