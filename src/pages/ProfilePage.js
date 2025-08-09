@@ -40,7 +40,8 @@ function ProfilePage() {
   const [error, setError] = useState('');
 
   const [showCustomUniversity, setShowCustomUniversity] = useState(false);
-
+  const [showCustomCity, setShowCustomCity] = useState(false);
+  const [showCustomProfession, setShowCustomProfession] = useState(false);
 
   useEffect(() => {
     var token = localStorage.getItem('token');
@@ -86,26 +87,30 @@ function ProfilePage() {
       .finally(() => setLoadingPosts(false));
   }, [userId, page]);
 
+  // Meslekler
   useEffect(() => {
     fetch('/data/meslekler.json')
       .then(res => res.json())
-      .then(data => setProfessions(data))
+      .then(data => setProfessions([...data, 'Diğer']))
       .catch(err => console.error('Meslekler yüklenemedi:', err));
   }, []);
 
+  // Üniversiteler
   useEffect(() => {
     fetch('/data/uni.json')
       .then(res => res.json())
-      .then(data => setUniversities(data))
+      .then(data => setUniversities([...data, 'Diğer']))
       .catch(err => console.error('Üniversiteler yüklenemedi:', err));
   }, []);
 
+  // Şehirler
   useEffect(() => {
     fetch('https://turkiyeapi.dev/api/v1/provinces')
       .then(res => res.json())
       .then(data => {
         if (data.status === 'OK' && Array.isArray(data.data)) {
-          setCities(data.data.map(city => city.name));
+          const cityNames = data.data.map(city => city.name);
+          setCities([...cityNames, 'Diğer']);
         }
       })
       .catch(err => console.error('İl API hatası:', err));
@@ -179,20 +184,38 @@ function ProfilePage() {
             placeholder={"Örnek:\n- Yazılım geliştirici\n- Kitap okumayı severim\n- Seyahat etmeyi severim"}
             onChange={val => onFieldChange('bio', val)}
           />
+
+          {/* Meslek */}
           <ProfileField
             label="Meslek"
             value={formData.profession}
             type="select"
             options={professions}
-            onChange={val => onFieldChange('profession', val)}
+            onChange={val => {
+              setShowCustomProfession(val === 'Diğer');
+              if (val !== 'Diğer') {
+                onFieldChange('profession', val);
+              } else {
+                onFieldChange('profession', '');
+              }
+            }}
           />
-                    <ProfileField
+          {showCustomProfession && (
+            <input
+              type="text"
+              placeholder="Meslek adını giriniz"
+              value={formData.profession}
+              onChange={e => onFieldChange('profession', e.target.value)}
+            />
+          )}
+
+          {/* Üniversite */}
+          <ProfileField
             label="Üniversite"
             value={formData.universityName}
             type="select"
             options={universities}
             onChange={val => {
-              onFieldChange('universityName', val);
               setShowCustomUniversity(val === 'Diğer');
               if (val !== 'Diğer') {
                 onFieldChange('universityName', val);
@@ -201,25 +224,39 @@ function ProfilePage() {
               }
             }}
           />
-
           {showCustomUniversity && (
-            <div className="custom-university-field">
-              <input
-                type="text"
-                placeholder="Üniversite adını giriniz"
-                value={formData.universityName}
-                onChange={e => onFieldChange('universityName', e.target.value)}
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Üniversite adını giriniz"
+              value={formData.universityName}
+              onChange={e => onFieldChange('universityName', e.target.value)}
+            />
           )}
 
+          {/* Şehir */}
           <ProfileField
             label="Şehir"
             value={formData.city}
             type="select"
             options={cities}
-            onChange={val => onFieldChange('city', val)}
+            onChange={val => {
+              setShowCustomCity(val === 'Diğer');
+              if (val !== 'Diğer') {
+                onFieldChange('city', val);
+              } else {
+                onFieldChange('city', '');
+              }
+            }}
           />
+          {showCustomCity && (
+            <input
+              type="text"
+              placeholder="Şehir adını giriniz"
+              value={formData.city}
+              onChange={e => onFieldChange('city', e.target.value)}
+            />
+          )}
+
           <ProfileField
             label="Telefon Numarası"
             value={formData.phoneNumber}

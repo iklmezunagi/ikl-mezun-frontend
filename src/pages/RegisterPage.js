@@ -27,6 +27,8 @@ function RegisterPage() {
   const [professions, setProfessions] = useState([]);
   const [universities, setUniversities] = useState([]);
   const [customUniversity, setCustomUniversity] = useState('');
+  const [customCity, setCustomCity] = useState('');
+  const [customProfession, setCustomProfession] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -66,6 +68,12 @@ function RegisterPage() {
     if (name === 'universityName' && value === 'Diğer') {
       setCustomUniversity('');
     }
+    if (name === 'city' && value === 'Diğer') {
+      setCustomCity('');
+    }
+    if (name === 'profession' && value === 'Diğer') {
+      setCustomProfession('');
+    }
 
     setFormData(prev => ({
       ...prev,
@@ -76,7 +84,6 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Backend zorunlu alan kontrolü (nullable olmayanlar)
     if (
       !formData.firstName.trim() ||
       !formData.lastName.trim() ||
@@ -90,10 +97,10 @@ function RegisterPage() {
       return;
     }
 
-    // universityName nullable olduğu için kontrol yok, sadece formda seçim için gösteriliyor (opsiyonel)
-
     const finalFormData = {
       ...formData,
+      city: formData.city === 'Diğer' ? customCity : formData.city,
+      profession: formData.profession === 'Diğer' ? customProfession : formData.profession,
       universityName: formData.universityName === 'Diğer' ? customUniversity : formData.universityName,
       highSchoolGraduateYear: parseInt(formData.highSchoolGraduateYear) || 0
     };
@@ -102,199 +109,211 @@ function RegisterPage() {
       const response = await registerStudent(finalFormData);
       setSuccessMessage(response.responseMessage || 'Kayıt başarılı! Yönlendiriliyorsunuz.');
       setErrorMessage('');
-
-   } catch (err) {
-   let message = err.message || 'Kayıt başarısız oldu.';
-
-      // Timeout / expired kontrolü
+    } catch (err) {
+      let message = err.message || 'Kayıt başarısız oldu.';
       if (message.toLowerCase().includes('timeout') || message.toLowerCase().includes('expired')) {
         message = 'Veritabanı yükleniyor, lütfen bekleyin. Bu işlem 30 saniye kadar sürebilir.';
       }
-
       setErrorMessage(message);
       setSuccessMessage('');
     }
 
-    var loginData = {'Username': finalFormData.username, 'Password': finalFormData.password}
-    
+    const loginData = { Username: finalFormData.username, Password: finalFormData.password };
     try {
-    const response = await loginStudent(loginData);
+      const response = await loginStudent(loginData);
+      if (response.isSuccess && response.data) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', response.data.username);
+        localStorage.setItem('studentId', response.data.id);
+        localStorage.setItem('isAdmin', response.data.isAdmin);
 
-    if (response.isSuccess && response.data) {
-      // Burada response.data içinden alıyoruz!
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('username', response.data.username);
-      localStorage.setItem('studentId', response.data.id);  // burası önemli
-      localStorage.setItem('isAdmin', response.data.isAdmin);
+        setSuccessMessage('Kayıt başarılı!');
+        setErrorMessage('');
 
-
-      setSuccessMessage( 'Kayıt başarılı!');
-      setErrorMessage('');
-      
-      setTimeout(() => {
-        navigate('/home'); 
-      }, 1000);
-    } else {
-      setErrorMessage( 'Kayıt başarısız');
+        setTimeout(() => {
+          navigate('/home');
+        }, 1000);
+      } else {
+        setErrorMessage('Kayıt başarısız');
+        setSuccessMessage('');
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
       setSuccessMessage('');
     }
-  } catch (err) {
-    setErrorMessage(err.message);
-    setSuccessMessage('');
-  }
-
   };
 
   return (
-     <>
+    <>
       <Navbar />
-    <div className="register-page">
-      <h2>Kayıt Ol</h2>
-      <form className="form-container" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Ad *"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-          required
-        />
+      <div className="register-page">
+        <h2>Kayıt Ol</h2>
+        <form className="form-container" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Ad *"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="text"
-          placeholder="Soyad *"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="text"
+            placeholder="Soyad *"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="email"
-          placeholder="Email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
+          <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
 
-        <select name="city" value={formData.city} onChange={handleChange}>
-          <option value="">Yaşadığınız İl</option>
-          {cities.map(city => (
-            <option key={city} value={city}>{city}</option>
-          ))}
-        </select>
-
-        <div className="highSchoolStatusContainer" style={{ marginTop: '10px', marginBottom: '10px' }}>
-          <p className="section-title">Liseye Devam Durumunuz *</p>
-          <label>
+          {/* Şehir Seçimi */}
+          <select name="city" value={formData.city} onChange={handleChange}>
+            <option value="">Yaşadığınız İl</option>
+            {cities.map(city => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+            <option value="Diğer">Diğer</option>
+          </select>
+          {formData.city === 'Diğer' && (
             <input
-              type="radio"
-              name="highSchoolStatus"
-              value="Mezun"
-              checked={formData.highSchoolStatus === 'Mezun'}
-              onChange={handleChange}
-              required
+              type="text"
+              placeholder="Şehir Adınızı Girin"
+              value={customCity}
+              onChange={(e) => setCustomCity(e.target.value)}
             />
-            Mezun
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="highSchoolStatus"
-              value="Öğrenci"
-              checked={formData.highSchoolStatus === 'Öğrenci'}
-              onChange={handleChange}
-              required
-            />
-            Öğrenci
-          </label>
-        </div>
+          )}
 
-        <input
-          type="number"
-          placeholder="Lise Mezuniyet Yılı *"
-          name="highSchoolGraduateYear"
-          value={formData.highSchoolGraduateYear}
-          onChange={handleChange}
-          min="1900"
-          max={new Date().getFullYear()}
-          required
-        />
-
-        {/* universityName nullable, opsiyonel olduğu için zorunlu değil */}
-        {formData.highSchoolStatus === 'Mezun' && (
-          <>
-            <select
-              name="universityName"
-              value={formData.universityName}
-              onChange={handleChange}
-            >
-              <option value="">Üniversite Seçin (Opsiyonel)</option>
-              {universities.map((uni, idx) => (
-                <option key={idx} value={uni}>{uni}</option>
-              ))}
-            </select>
-
-            {formData.universityName === 'Diğer' && (
+          {/* Lise Durumu */}
+          <div className="highSchoolStatusContainer" style={{ marginTop: '10px', marginBottom: '10px' }}>
+            <p className="section-title">Liseye Devam Durumunuz *</p>
+            <label>
               <input
-                type="text"
-                placeholder="Üniversite Adınızı Girin (Opsiyonel)"
-                value={customUniversity}
-                onChange={(e) => setCustomUniversity(e.target.value)}
+                type="radio"
+                name="highSchoolStatus"
+                value="Mezun"
+                checked={formData.highSchoolStatus === 'Mezun'}
+                onChange={handleChange}
+                required
               />
-            )}
-          </>
-        )}
+              Mezun
+            </label>
+            <label style={{ marginLeft: '20px' }}>
+              <input
+                type="radio"
+                name="highSchoolStatus"
+                value="Öğrenci"
+                checked={formData.highSchoolStatus === 'Öğrenci'}
+                onChange={handleChange}
+                required
+              />
+              Öğrenci
+            </label>
+          </div>
 
-        <select
-          name="profession"
-          value={formData.profession}
-          onChange={handleChange}
-        >
-          <option value="">Meslek Seçiniz (Opsiyonel)</option>
-          {professions.map(prof => (
-            <option key={prof} value={prof}>{prof}</option>
-          ))}
-        </select>
+          <input
+            type="number"
+            placeholder="Lise Mezuniyet Yılı *"
+            name="highSchoolGraduateYear"
+            value={formData.highSchoolGraduateYear}
+            onChange={handleChange}
+            min="1900"
+            max={new Date().getFullYear()}
+            required
+          />
 
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          placeholder="Örn: 5xx xxx xxxx (Opsiyonel)"
-        />
+          {/* Üniversite */}
+          {formData.highSchoolStatus === 'Mezun' && (
+            <>
+              <select
+                name="universityName"
+                value={formData.universityName}
+                onChange={handleChange}
+              >
+                <option value="">Üniversite Seçin (Opsiyonel)</option>
+                {universities.map((uni, idx) => (
+                  <option key={idx} value={uni}>{uni}</option>
+                ))}
+                <option value="Diğer">Diğer</option>
+              </select>
+              {formData.universityName === 'Diğer' && (
+                <input
+                  type="text"
+                  placeholder="Üniversite Adınızı Girin (Opsiyonel)"
+                  value={customUniversity}
+                  onChange={(e) => setCustomUniversity(e.target.value)}
+                />
+              )}
+            </>
+          )}
 
-        <input
-          type="text"
-          placeholder="Kullanıcı Adı *"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
+          {/* Meslek */}
+          <select
+            name="profession"
+            value={formData.profession}
+            onChange={handleChange}
+          >
+            <option value="">Meslek Seçiniz (Opsiyonel)</option>
+            {professions.map(prof => (
+              <option key={prof} value={prof}>{prof}</option>
+            ))}
+            <option value="Diğer">Diğer</option>
+          </select>
+          {formData.profession === 'Diğer' && (
+            <input
+              type="text"
+              placeholder="Meslek Adınızı Girin"
+              value={customProfession}
+              onChange={(e) => setCustomProfession(e.target.value)}
+            />
+          )}
 
-        <input
-          type="password"
-          placeholder="Şifre *"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="tel"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            placeholder="Örn: 5xx xxx xxxx (Opsiyonel)"
+          />
 
-        <button type="submit" className="submit-button">Kayıt Ol</button>
+          <input
+            type="text"
+            placeholder="Kullanıcı Adı *"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
 
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        {successMessage && <p className="success-message">{successMessage}</p>}
+          <input
+            type="password"
+            placeholder="Şifre *"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-        <p className="login-link">
-          Hesabın var mı? <Link to="/">Giriş Yap</Link>
-        </p>
-      </form>
-    </div>
-         <Footer />     
-       </>
+          <button type="submit" className="submit-button">Kayıt Ol</button>
+
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          {successMessage && <p className="success-message">{successMessage}</p>}
+
+          <p className="login-link">
+            Hesabın var mı? <Link to="/">Giriş Yap</Link>
+          </p>
+        </form>
+      </div>
+      <Footer />
+    </>
   );
 }
 
